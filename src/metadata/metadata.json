@@ -1,0 +1,47 @@
+{
+  "name": "Jarvis Token",
+  "symbol": "JARVIS",
+  "description": "JARVIS is the fixed-supply utility token for the Jarvis ecosystem. Internal Jarvis SaaS credits remain the authoritative usage balance.",
+  "image": "https://assets.jarvis.energy/tokens/jarvis/logo.png",
+  "external_url": "https://jarvis.energytokenomics",
+  "animation_url": null,
+  "attributes": [
+    {
+      "trait_type": "Standard",
+      "value": "Token-2022"
+    },
+    {
+      "trait_type": "Decimals",
+      "value": 6
+    },
+    {
+      "trait_type": "Fixed Supply",
+      "value": "18440000000"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana"
+    }
+  ],
+  "properties": {
+    "category": "utility-token",
+    "files": [
+      {
+        "uri": "https://assets.jarvis.energy/tokens/jarvis/logo.png",
+        "type": "image/png"
+      }
+    ],
+    "links": {
+      "website": "https://jarvis.energy",
+      "tokenomics": "https://jarvis.energy/tokenomics",
+      "documentation": "https://docs.jarvis.energy/token"
+    }
+  },
+  "extensions": {
+    "token_program": "Token-2022",
+    "supply_base_units": "18440000000000000",
+    "mint_authority_policy": "revoke-after-initial-mint",
+    "freeze_authority_policy": "none",
+    "metadata_pointer": "self"
+  }
+}
