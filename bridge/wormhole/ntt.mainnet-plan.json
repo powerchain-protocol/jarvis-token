@@ -1,0 +1,18 @@
+{
+  "environment": "mainnet",
+  "provider": "wormhole-ntt",
+  "canonicalChain": "sui",
+  "canonicalMode": "locking",
+  "wrappedChain": "solana",
+  "wrappedMode": "burning",
+  "decimals": 6,
+  "maximumBaseUnits": "18440000000000000",
+  "sui": { "coinType": "REPLACE", "managerPackageId": "REPLACE", "managerObjectId": "REPLACE" },
+  "solana": { "mint": "REPLACE_WITH_32_PLUS_CHAR_PUBLIC_KEY", "managerProgramId": "REPLACE_WITH_32_PLUS_CHAR_PROGRAM_ID", "tokenAuthority": "REPLACE_WITH_32_PLUS_CHAR_AUTHORITY" },
+  "limits": { "suiOutboundBaseUnits": "0", "solanaOutboundBaseUnits": "0" },
+  "threshold": 1,
+  "transceivers": ["REPLACE_WITH_VERIFIED_TRANSCEIVER_ID"],
+  "paused": true,
+  "broadcast": false,
+  "generateOnly": true
+}

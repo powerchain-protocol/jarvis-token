@@ -1,0 +1,20 @@
+{
+  "network": "mainnet-beta",
+  "rpcUrl": "https://api.mainnet-beta.solana.com",
+  "treasuryAddress": "REPLACE_WITH_TREASURY_PUBLIC_KEY",
+  "feePayerAddress": "REPLACE_WITH_FEE_PAYER_PUBLIC_KEY",
+  "mintAddress": "REPLACE_WITH_PREGENERATED_MINT_PUBLIC_KEY",
+  "mintAuthorityAddress": "REPLACE_WITH_MINT_AUTHORITY_PUBLIC_KEY",
+  "bridgeTokenAuthorityAddress": "REPLACE_WITH_NTT_TOKEN_AUTHORITY_PUBLIC_KEY",
+  "metadata": {
+    "uri": "https://example.invalid/jarvis.metadata.json",
+    "updateAuthorityAddress": "REPLACE_WITH_METADATA_AUTHORITY_PUBLIC_KEY",
+    "canonicalMechanism": "token-2022-mint-extension"
+  },
+  "broadcast": false,
+  "mainnetReview": {
+    "changeTicket": "REPLACE_WITH_APPROVED_CHANGE_TICKET",
+    "reviewedBy": "REPLACE_WITH_REVIEWER_IDENTITY",
+    "generateOnly": true
+  }
+}

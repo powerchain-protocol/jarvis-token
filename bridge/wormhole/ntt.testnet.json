@@ -1,0 +1,29 @@
+{
+  "environment": "testnet",
+  "provider": "wormhole-ntt",
+  "canonicalChain": "sui",
+  "canonicalMode": "locking",
+  "wrappedChain": "solana",
+  "wrappedMode": "burning",
+  "decimals": 6,
+  "maximumBaseUnits": "18440000000000000",
+  "sui": {
+    "coinType": "REPLACE::jarvis::JARVIS",
+    "managerPackageId": "REPLACE_WITH_NTT_PACKAGE_ID",
+    "managerObjectId": "REPLACE_WITH_NTT_MANAGER_OBJECT_ID"
+  },
+  "solana": {
+    "mint": "REPLACE_WITH_WRAPPED_MINT_PUBLIC_KEY",
+    "managerProgramId": "REPLACE_WITH_NTT_MANAGER_PROGRAM_ID",
+    "tokenAuthority": "REPLACE_WITH_DERIVED_NTT_TOKEN_AUTHORITY"
+  },
+  "limits": {
+    "suiOutboundBaseUnits": "1000000000000",
+    "solanaOutboundBaseUnits": "1000000000000"
+  },
+  "threshold": 1,
+  "transceivers": ["wormhole-core"],
+  "paused": true,
+  "broadcast": false,
+  "generateOnly": true
+}

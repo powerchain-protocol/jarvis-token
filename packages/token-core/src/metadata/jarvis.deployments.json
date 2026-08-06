@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "deployments": [],
+  "status": "configuration-ready; deployment not verified",
+  "warning": "Add records only after confirmed deployment and independent verification. Never store private keys."
+}

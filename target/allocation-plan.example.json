@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tokenVersion": "1.0.0-rc.0",
+  "status": "draft",
+  "governanceRecord": "replace-with-approved-governance-record",
+  "approvedAt": null,
+  "reviewers": [],
+  "allocations": [
+    {
+      "allocationId": "initial-treasury-custody",
+      "category": "treasury",
+      "percentageBps": 10000,
+      "amountBaseUnits": "18440000000000000",
+      "beneficiaryClass": "temporary treasury custody",
+      "custodyAddress": "replace-with-configured-treasury-address",
+      "locked": false,
+      "vesting": {
+        "curve": "immediate",
+        "startAt": "2026-01-01T00:00:00.000Z",
+        "endAt": "2026-01-01T00:00:00.000Z",
+        "enforcementMechanism": "treasury multisig custody"
+      }
+    }
+  ]
+}
+

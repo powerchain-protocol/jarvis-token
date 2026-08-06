@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "unverified-template",
+  "generatedAt": null,
+  "solana": {
+    "network": "mainnet-beta", "mint": null, "metadataAccount": null,
+    "bridgeManagerProgramId": null, "bridgeTokenAuthority": null,
+    "transactionSignatures": [], "wrappedSupplyBaseUnits": null,
+    "mintAuthority": "unverified", "freezeAuthority": "unverified",
+    "observedAt": null, "independentlyVerified": false
+  },
+  "sui": {
+    "network": "mainnet", "packageId": null, "coinType": null,
+    "fixedSupplyObjectId": null, "publishDigest": null,
+    "supplyBaseUnits": null, "treasuryCapPresent": "unverified",
+    "observedAt": null, "independentlyVerified": false
+  },
+  "bridge": {
+    "provider": "wormhole-ntt", "suiManagerPackageId": null,
+    "suiManagerObjectId": null, "solanaManagerProgramId": null,
+    "solanaTokenAuthority": null, "peersVerified": false,
+    "managersPausedDuringVerification": false
+  },
+  "supplySnapshot": null,
+  "allocationCommitmentSha256": null,
+  "artifactSha256": {},
+  "approvals": []
+}

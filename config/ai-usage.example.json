@@ -1,0 +1,9 @@
+{
+  "inputTokens": 1000,
+  "outputTokens": 500,
+  "images": 0,
+  "audioSeconds": 0,
+  "videoSeconds": 0,
+  "computeMilliseconds": 250,
+  "storageByteHours": "0"
+}
