@@ -154,3 +154,10 @@ deployment profiles. It does not claim that a JARVIS mint, Sui package, fixed
 supply, metadata account, or authority revocation has been completed on
 mainnet. Mainnet addresses must be added only after confirmed deployment and
 independent verification.
+
+## If Sui publishes and permanently fixes the 18.44B supply.
+
+* Bridging Sui → Solana locks canonical JARVIS in audited bridge custody and mints the same amount of wrapped Token-2022 JARVIS.
+* Solana → Sui burns wrapped JARVIS before releasing canonical Sui coins.
+* Solana’s mint authority remains bridge-controlled; it must not be revoked like the canonical Sui TreasuryCap.
+* Mainnet remains plan-only, while testnet gets executable adapters and invariant verification.
