@@ -11,6 +11,7 @@ not prove that JARVIS has been deployed, audited, or approved for mainnet use.
 | Token reviewer | [Tokenomics](tokenomics.md) | [Architecture](architecture.md), [Threat model](threat-model.md) |
 | Testnet operator | [Deployment](deployment.md) | [Bridge operations](bridge-operations.md), [Verification](verification.md) |
 | AI integrator | [AI utility](ai-utility.md) | [Guarded transactions](transactions.md) |
+| Backend operator | [Database integration](database.md) | [Verification](verification.md), [Installation](installation.md) |
 | Security reviewer | [Threat model](threat-model.md) | [Incident response](incident-response.md), [Security policy](../SECURITY.md) |
 
 ## Document map
@@ -29,6 +30,8 @@ not prove that JARVIS has been deployed, audited, or approved for mainnet use.
 - [AI utility](ai-utility.md): quotes, reservations, sessions, agents, and MPC.
 - [Guarded transactions](transactions.md): intents, authorization, receipts, and
   refunds.
+- [Database integration](database.md): Prisma schema, migrations, Neon and
+  Supabase connection roles, repositories, and operational safeguards.
 - [Threat model](threat-model.md) and [incident response](incident-response.md):
   preventive controls and emergency procedure.
 

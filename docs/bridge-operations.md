@@ -44,6 +44,13 @@ them cancelled merely because a relay failed or timed out.
 
 ## Reconciliation
 
+Persisted transfer records are untrusted input. The client revalidates transfer
+direction/actions, canonical amounts, threshold feasibility, transceiver and
+attestation uniqueness, event chronology, status progression, terminal fields,
+and manual-review evidence before every mutation or supply aggregation. A
+database record that fails validation must be quarantined and investigated; do
+not repair it by editing attestations, status, or amounts in place.
+
 Run reconciliation before limit changes, after deployments or upgrades, on a
 regular production cadence, and immediately after an alert. Record finalized
 checkpoint identifiers and raw observations from at least two RPC providers.
@@ -76,4 +83,3 @@ discrepancy. Preserve state, logs, transactions, messages, attestations, raw RPC
 responses, and configuration. Do not delete queues, replay messages manually,
 mint replacement units, or release collateral to make balances appear correct.
 Follow [Incident response](incident-response.md).
-

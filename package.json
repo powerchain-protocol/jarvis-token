@@ -5,16 +5,23 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "tsc -p tsconfig.json",
-    "check": "tsc -p tsconfig.json --noEmit && npm run check:scripts",
+    "check": "tsc -p tsconfig.json --noEmit && npm run check:scripts && npm run db:validate",
     "check:scripts": "bash -n scripts/*.sh",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "test": "vitest run",
     "prejarvis": "npm run build",
     "jarvis": "node dist/packages/token-core/src/cli.js",
-    "jarvis:dev": "tsx packages/token-core/src/cli.ts"
+    "jarvis:dev": "tsx packages/token-core/src/cli.ts",
+    "prisma:generate": "prisma generate",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:status": "prisma migrate status",
+    "db:readiness": "npm run jarvis -- check-database-readiness",
+    "db:validate": "bash scripts/validate-prisma.sh"
   },
   "dependencies": {
+    "@prisma/client": "6.19.3",
     "@solana/spl-token": "^0.4.14",
     "@solana/spl-token-metadata": "^0.1.6",
     "@solana/web3.js": "^1.98.4",
@@ -23,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "prisma": "6.19.3",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"

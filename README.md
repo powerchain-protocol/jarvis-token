@@ -18,6 +18,8 @@ also review [Security policy](SECURITY.md), [Threat model](docs/threat-model.md)
 and [Incident response](docs/incident-response.md).
 The AI settlement model is documented in [JARVIS AI utility](docs/ai-utility.md).
 Payment lifecycle controls are documented in [Guarded transactions](docs/transactions.md).
+Persistence, Prisma migrations, Neon, and Supabase configuration are documented
+in [Database integration](docs/database.md).
 The frozen monetary policy is documented in [Tokenomics](TOKENOMICS.md),
 and live bridge procedures are documented in
 [Bridge operations](docs/bridge-operations.md).
@@ -27,6 +29,10 @@ and live bridge procedures are documented in
 - `programs/{mainnet,testnet}/jarvis/` contains public Token-2022 program
   profiles. There is intentionally no custom Solana JARVIS program.
 - `clients/typescript/src/jarvis/` contains the supported non-signing client.
+- `packages/token-core/src/utils/` contains shared canonical JSON, chain,
+  identifier, and timestamp helpers used by security-sensitive modules.
+- `prisma/` contains the PostgreSQL schema and immutable migration history for
+  Neon, Supabase, or standard PostgreSQL deployments.
 - `contracts/jarvis/` contains the canonical mainnet Sui package.
 - `testnet-contract/jarvis/` contains the testnet Sui package mirror.
 - `scripts/`, `tests/`, and `target/` contain operations, verification, and
@@ -54,6 +60,10 @@ idempotent reservations, settlement/refund logic, tokenized chat and agent
 budgets, digest-only turn receipts, and MPC approval-policy state. It does not
 call LLM providers, store prompts, manage key shares, sign, or broadcast. AI
 usage accounting never changes the fixed JARVIS supply.
+
+Public token helpers parse and format up to six decimal places using exact
+integer arithmetic, with fixed-supply overflow and subtraction-underflow
+protection. Exponent notation and non-canonical decimal forms are rejected.
 
 Transaction functions create canonical hash-bound payment/refund intents,
 require exact MPC proposal binding, enforce replay/expiry/address/amount rules,
@@ -127,6 +137,12 @@ npm install
 npm run check
 npm test
 
+# Validate the schema, then apply committed migrations through DIRECT_URL.
+npm run db:validate
+npm run db:migrate:status
+npm run db:migrate:deploy
+npm run db:readiness
+
 # Generates artifacts only; refuses to overwrite an existing output file.
 npm run jarvis -- plan-solana-wrapped --config config/mainnet.json --out artifacts/solana-plan.json
 npm run jarvis -- plan-ntt --config bridge/wormhole/ntt.testnet.json --out artifacts/ntt-plan.json
@@ -142,6 +158,7 @@ npm run jarvis -- validate-allocation --file allocation-plan.json
 npm run jarvis -- commit-allocation --file allocation-plan.json --out artifacts/allocation-commitment.json
 npm run jarvis -- project-vesting --file allocation-plan.json --as-of 2027-01-01T00:00:00.000Z --claims claims.json --out artifacts/vesting-snapshot.json
 npm run jarvis -- verify-vesting-snapshot --snapshot artifacts/vesting-snapshot.json --file allocation-plan.json --claims claims.json
+npm run jarvis -- validate-database-config --production
 
 # Fails closed when mandatory production dependencies such as Sui CLI are absent.
 bash scripts/production-readiness.sh config/mainnet.json config/ntt-mainnet.json

@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { createHash } from "node:crypto";
 import { positiveJarvisAmountSchema } from "./amounts.js";
 import { TOKEN } from "./constants.js";
+import { canonicalJson, compareCanonicalText, sha256CanonicalJson } from "./utils/canonical-json.js";
+import { assertChainNetwork, parseSolanaAddress, parseSolanaTransactionSignature, parseSuiAddressOrObject, parseSuiTransactionDigest } from "./utils/chains.js";
+import { blockFinalityAnchorSchema, validateBlockFinalityAnchor } from "./blockchains.js";
 
 const allocationCategorySchema = z.enum([
   "ecosystem-public", "team-contributors", "development-operations", "treasury",
@@ -33,6 +35,12 @@ export const allocationEntrySchema = z.object({
   amountBaseUnits: positiveJarvisAmountSchema,
   beneficiaryClass: identity,
   custodyAddress: identity,
+  custodyBinding: z.object({
+    chain: z.enum(["sui", "solana"]),
+    network: z.string().min(1),
+    assetId: z.string().min(3),
+    address: z.string().min(3),
+  }).optional(),
   locked: z.boolean(),
   vesting: z.object({
     curve: z.enum(["immediate", "linear", "milestone"]),
@@ -47,6 +55,19 @@ export const allocationEntrySchema = z.object({
     })).optional(),
   }),
 }).superRefine((entry, context) => {
+  if (entry.custodyBinding) {
+    const binding = entry.custodyBinding;
+    if (binding.address !== entry.custodyAddress) context.addIssue({ code: "custom", path: ["custodyBinding", "address"], message: "custody binding address must equal custody address" });
+    try { assertChainNetwork(binding.chain, binding.network); } catch { context.addIssue({ code: "custom", path: ["custodyBinding", "network"], message: "custody network is invalid for chain" }); }
+    if (binding.chain === "sui") {
+      try { parseSuiAddressOrObject(binding.address); } catch { context.addIssue({ code: "custom", path: ["custodyBinding", "address"], message: "invalid Sui custody address" }); }
+      if (!/^0x[0-9a-fA-F]{64}::jarvis::JARVIS$/.test(binding.assetId)) context.addIssue({ code: "custom", path: ["custodyBinding", "assetId"], message: "invalid Sui custody JARVIS coin type" });
+    } else {
+      for (const [path, value] of [["address", binding.address], ["assetId", binding.assetId]] as const) {
+        try { if (parseSolanaAddress(value) !== value) throw new Error("non-canonical public key"); } catch { context.addIssue({ code: "custom", path: ["custodyBinding", path], message: `invalid Solana custody ${path}` }); }
+      }
+    }
+  }
   const start = Date.parse(entry.vesting.startAt); const end = Date.parse(entry.vesting.endAt);
   if (end < start) context.addIssue({ code: "custom", path: ["vesting", "endAt"], message: "vesting end must not precede start" });
   if (entry.vesting.curve !== "immediate" && end === start) context.addIssue({ code: "custom", path: ["vesting", "endAt"], message: "non-immediate vesting requires a positive duration" });
@@ -101,26 +122,23 @@ export function validateApprovedAllocationPlan(input: unknown): AllocationPlan {
   return plan;
 }
 
-function canonical(value: unknown): string {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  return `{${Object.entries(value as Record<string, unknown>)
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([key, item]) => `${JSON.stringify(key)}:${canonical(item)}`).join(",")}}`;
-}
-
 /** Creates an order-independent commitment and public reconciliation summary. */
 export function buildAllocationCommitment(input: unknown) {
   const plan = validateApprovedAllocationPlan(input);
   const normalized = {
     ...plan,
-    reviewers: [...plan.reviewers].sort(),
+    reviewers: [...plan.reviewers].sort(compareCanonicalText),
     allocations: [...plan.allocations]
-      .map((allocation) => ({ ...allocation, vesting: { ...allocation.vesting, milestones: allocation.vesting.milestones ? [...allocation.vesting.milestones].sort((left, right) => left.milestoneId.localeCompare(right.milestoneId)) : undefined } }))
-      .sort((left, right) => left.allocationId.localeCompare(right.allocationId)),
+      .map((allocation) => ({
+        ...allocation,
+        vesting: allocation.vesting.milestones
+          ? { ...allocation.vesting, milestones: [...allocation.vesting.milestones].sort((left, right) => compareCanonicalText(left.milestoneId, right.milestoneId)) }
+          : { ...allocation.vesting },
+      }))
+      .sort((left, right) => compareCanonicalText(left.allocationId, right.allocationId)),
   };
-  const digest = createHash("sha256").update(canonical(normalized)).digest("hex");
-  const policyDigest = createHash("sha256").update(canonical(TOKENOMICS_POLICY)).digest("hex");
+  const digest = sha256CanonicalJson(normalized);
+  const policyDigest = sha256CanonicalJson(TOKENOMICS_POLICY);
   const categories = new Map<string, { percentageBps: number; amountBaseUnits: bigint }>();
   for (const allocation of normalized.allocations) {
     const current = categories.get(allocation.category) ?? { percentageBps: 0, amountBaseUnits: 0n };
@@ -140,7 +158,7 @@ export function buildAllocationCommitment(input: unknown) {
     reviewerCount: plan.reviewers.length,
     totalPercentageBps: 10_000,
     totalBaseUnits: TOKEN.maximumBaseUnits.toString(),
-    categoryTotals: Object.fromEntries([...categories.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([category, total]) => [category, { percentageBps: total.percentageBps, amountBaseUnits: total.amountBaseUnits.toString() }])),
+    categoryTotals: Object.fromEntries([...categories.entries()].sort(([left], [right]) => compareCanonicalText(left, right)).map(([category, total]) => [category, { percentageBps: total.percentageBps, amountBaseUnits: total.amountBaseUnits.toString() }])),
   };
 }
 
@@ -155,6 +173,35 @@ export const allocationClaimEventSchema = z.object({
   amountBaseUnits: positiveJarvisAmountSchema,
   claimedAt: z.iso.datetime(),
   transactionId: identity,
+});
+
+export const finalizedAllocationClaimEventSchema = allocationClaimEventSchema.extend({
+  chain: z.enum(["sui", "solana"]),
+  network: z.string().min(1),
+  assetId: z.string().min(3),
+  from: z.string().min(3),
+  to: z.string().min(3),
+  finalized: z.literal(true),
+  success: z.literal(true),
+  observedAt: z.iso.datetime(),
+  blockAnchor: blockFinalityAnchorSchema,
+}).superRefine((event, context) => {
+  try { assertChainNetwork(event.chain, event.network); } catch { context.addIssue({ code: "custom", path: ["network"], message: "network is invalid for claim chain" }); }
+  if (Date.parse(event.observedAt) < Date.parse(event.claimedAt)) context.addIssue({ code: "custom", path: ["observedAt"], message: "claim observation predates claim" });
+  if (event.from === event.to) context.addIssue({ code: "custom", path: ["to"], message: "claim source and recipient must differ" });
+  try { validateBlockFinalityAnchor(event.blockAnchor, event.chain, event.network); }
+  catch { context.addIssue({ code: "custom", path: ["blockAnchor"], message: "claim block anchor does not match chain and network" }); }
+  if (event.chain === "sui") {
+    try { parseSuiAddressOrObject(event.from); } catch { context.addIssue({ code: "custom", path: ["from"], message: "invalid Sui claim source" }); }
+    try { parseSuiAddressOrObject(event.to); } catch { context.addIssue({ code: "custom", path: ["to"], message: "invalid Sui claim recipient" }); }
+    try { parseSuiTransactionDigest(event.transactionId); } catch { context.addIssue({ code: "custom", path: ["transactionId"], message: "invalid Sui claim transaction digest" }); }
+    if (!/^0x[0-9a-fA-F]{64}::jarvis::JARVIS$/.test(event.assetId)) context.addIssue({ code: "custom", path: ["assetId"], message: "invalid Sui JARVIS coin type" });
+  } else {
+    for (const [path, value] of [["from", event.from], ["to", event.to], ["assetId", event.assetId]] as const) {
+      try { if (parseSolanaAddress(value) !== value) throw new Error("non-canonical public key"); } catch { context.addIssue({ code: "custom", path: [path], message: `invalid Solana claim ${path}` }); }
+    }
+    try { parseSolanaTransactionSignature(event.transactionId); } catch { context.addIssue({ code: "custom", path: ["transactionId"], message: "invalid Solana claim transaction signature" }); }
+  }
 });
 
 function vestedAmountAt(entry: z.infer<typeof allocationEntrySchema>, at: number): bigint {
@@ -172,8 +219,13 @@ function vestedAmountAt(entry: z.infer<typeof allocationEntrySchema>, at: number
 export function buildVestingSnapshot(planInput: unknown, asOfInput: string, claimsInput: unknown = []) {
   const plan = validateApprovedAllocationPlan(planInput);
   const asOf = z.iso.datetime().parse(asOfInput); const at = Date.parse(asOf);
-  const parsedClaims = z.union([z.array(allocationClaimEventSchema), z.array(allocationClaimSchema)]).parse(claimsInput);
-  const eventMode = parsedClaims.length > 0 && "claimId" in parsedClaims[0]!;
+  const rawClaims = z.array(z.unknown()).parse(claimsInput);
+  const firstClaim = rawClaims[0];
+  const eventMode = firstClaim !== undefined && typeof firstClaim === "object" && firstClaim !== null && "claimId" in firstClaim;
+  const finalizedMode = eventMode && "chain" in firstClaim;
+  const parsedClaims = finalizedMode
+    ? z.array(finalizedAllocationClaimEventSchema).parse(rawClaims)
+    : eventMode ? z.array(allocationClaimEventSchema).parse(rawClaims) : z.array(allocationClaimSchema).parse(rawClaims);
   const claims = eventMode ? [] : parsedClaims as z.infer<typeof allocationClaimSchema>[];
   const events = eventMode ? parsedClaims as z.infer<typeof allocationClaimEventSchema>[] : [];
   const claimMap = new Map<string, bigint>();
@@ -184,22 +236,34 @@ export function buildVestingSnapshot(planInput: unknown, asOfInput: string, clai
   const knownIds = new Set(plan.allocations.map((entry) => entry.allocationId));
   for (const id of claimMap.keys()) if (!knownIds.has(id)) throw new Error(`claim references unknown allocation: ${id}`);
   const claimIds = new Set<string>(); const transactionIds = new Set<string>(); const validationClaimMap = new Map<string, bigint>();
-  const sortedEvents = [...events].sort((left, right) => left.claimedAt.localeCompare(right.claimedAt) || left.claimId.localeCompare(right.claimId));
+  const sortedEvents = [...events].sort((left, right) => compareCanonicalText(left.claimedAt, right.claimedAt) || compareCanonicalText(left.claimId, right.claimId));
+  const includedEvents: typeof sortedEvents = [];
   for (const event of sortedEvents) {
     if (!knownIds.has(event.allocationId)) throw new Error(`claim references unknown allocation: ${event.allocationId}`);
+    if (Date.parse(event.claimedAt) < Date.parse(plan.approvedAt!)) throw new Error(`claim event predates allocation approval: ${event.claimId}`);
     if (claimIds.has(event.claimId)) throw new Error(`duplicate claim event ID: ${event.claimId}`);
     if (transactionIds.has(event.transactionId)) throw new Error(`duplicate claim transaction ID: ${event.transactionId}`);
     claimIds.add(event.claimId); transactionIds.add(event.transactionId);
     const entry = plan.allocations.find((allocation) => allocation.allocationId === event.allocationId)!;
+    if (finalizedMode) {
+      const finalized = event as z.infer<typeof finalizedAllocationClaimEventSchema>;
+      const binding = entry.custodyBinding;
+      if (!binding) throw new Error(`finalized claim requires allocation custody binding: ${event.claimId}`);
+      if (finalized.from !== binding.address || finalized.chain !== binding.chain || finalized.network !== binding.network || finalized.assetId !== binding.assetId) throw new Error(`claim chain, network, asset, or source does not match allocation custody binding: ${event.claimId}`);
+    }
     const cumulative = (validationClaimMap.get(event.allocationId) ?? 0n) + BigInt(event.amountBaseUnits);
     if (cumulative > vestedAmountAt(entry, Date.parse(event.claimedAt))) throw new Error(`claim event exceeds vested amount: ${event.claimId}`);
     validationClaimMap.set(event.allocationId, cumulative);
-    if (Date.parse(event.claimedAt) <= at) claimMap.set(event.allocationId, cumulative);
+    const evidenceTime = finalizedMode ? Date.parse((event as z.infer<typeof finalizedAllocationClaimEventSchema>).observedAt) : Date.parse(event.claimedAt);
+    if (evidenceTime <= at) {
+      claimMap.set(event.allocationId, (claimMap.get(event.allocationId) ?? 0n) + BigInt(event.amountBaseUnits));
+      includedEvents.push(event);
+    }
   }
 
   let totalVested = 0n; let totalClaimed = 0n;
   const categories = new Map<string, { vested: bigint; claimed: bigint; allocation: bigint }>();
-  const allocations = [...plan.allocations].sort((left, right) => left.allocationId.localeCompare(right.allocationId)).map((entry) => {
+  const allocations = [...plan.allocations].sort((left, right) => compareCanonicalText(left.allocationId, right.allocationId)).map((entry) => {
     const amount = BigInt(entry.amountBaseUnits); const vested = vestedAmountAt(entry, at);
     const claimed = claimMap.get(entry.allocationId) ?? 0n;
     if (claimed > vested) throw new Error(`claimed amount exceeds vested amount: ${entry.allocationId}`);
@@ -208,17 +272,18 @@ export function buildVestingSnapshot(planInput: unknown, asOfInput: string, clai
     category.vested += vested; category.claimed += claimed; category.allocation += amount; categories.set(entry.category, category);
     return { allocationId: entry.allocationId, category: entry.category, amountBaseUnits: entry.amountBaseUnits, vestedBaseUnits: vested.toString(), claimedBaseUnits: claimed.toString(), claimableBaseUnits: (vested - claimed).toString(), unvestedBaseUnits: (amount - vested).toString() };
   });
-  const categoryTotals = Object.fromEntries([...categories.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([category, value]) => [category, { amountBaseUnits: value.allocation.toString(), vestedBaseUnits: value.vested.toString(), claimedBaseUnits: value.claimed.toString(), claimableBaseUnits: (value.vested - value.claimed).toString(), unvestedBaseUnits: (value.allocation - value.vested).toString() }]));
-  const claimLedgerSha256 = createHash("sha256").update(canonical(eventMode ? sortedEvents : claims.sort((left, right) => left.allocationId.localeCompare(right.allocationId)))).digest("hex");
-  const snapshot = { schemaVersion: 1, tokenVersion: TOKEN.version, asOf, claimEvidenceMode: eventMode ? "transaction-events" : "aggregate-legacy", claimLedgerSha256, allocationCommitmentSha256: buildAllocationCommitment(plan).allocationCommitmentSha256, totalSupplyBaseUnits: TOKEN.maximumBaseUnits.toString(), vestedBaseUnits: totalVested.toString(), claimedBaseUnits: totalClaimed.toString(), claimableBaseUnits: (totalVested - totalClaimed).toString(), unvestedBaseUnits: (TOKEN.maximumBaseUnits - totalVested).toString(), categoryTotals, allocations };
-  return { ...snapshot, snapshotSha256: createHash("sha256").update(canonical(snapshot)).digest("hex") };
+  const categoryTotals = Object.fromEntries([...categories.entries()].sort(([left], [right]) => compareCanonicalText(left, right)).map(([category, value]) => [category, { amountBaseUnits: value.allocation.toString(), vestedBaseUnits: value.vested.toString(), claimedBaseUnits: value.claimed.toString(), claimableBaseUnits: (value.vested - value.claimed).toString(), unvestedBaseUnits: (value.allocation - value.vested).toString() }]));
+  const claimLedgerSha256 = sha256CanonicalJson(eventMode ? includedEvents : claims.sort((left, right) => compareCanonicalText(left.allocationId, right.allocationId)));
+  const snapshot = { schemaVersion: 1, tokenVersion: TOKEN.version, asOf, claimEvidenceMode: finalizedMode ? "finalized-chain-events" : eventMode ? "transaction-events-legacy" : "aggregate-legacy", includedClaimEventCount: eventMode ? includedEvents.length : null, claimLedgerSha256, allocationCommitmentSha256: buildAllocationCommitment(plan).allocationCommitmentSha256, totalSupplyBaseUnits: TOKEN.maximumBaseUnits.toString(), vestedBaseUnits: totalVested.toString(), claimedBaseUnits: totalClaimed.toString(), claimableBaseUnits: (totalVested - totalClaimed).toString(), unvestedBaseUnits: (TOKEN.maximumBaseUnits - totalVested).toString(), categoryTotals, allocations };
+  return { ...snapshot, snapshotSha256: sha256CanonicalJson(snapshot) };
 }
 
 const vestingSnapshotSchema = z.object({
   schemaVersion: z.literal(1),
   tokenVersion: z.literal(TOKEN.version),
   asOf: z.iso.datetime(),
-  claimEvidenceMode: z.enum(["transaction-events", "aggregate-legacy"]),
+  claimEvidenceMode: z.enum(["finalized-chain-events", "transaction-events-legacy", "aggregate-legacy"]),
+  includedClaimEventCount: z.number().int().nonnegative().nullable(),
   claimLedgerSha256: z.string().regex(/^[a-f0-9]{64}$/),
   allocationCommitmentSha256: z.string().regex(/^[a-f0-9]{64}$/),
   totalSupplyBaseUnits: z.string(),
@@ -238,9 +303,9 @@ const vestingSnapshotSchema = z.object({
 /** Recomputes a published snapshot from its approved plan and complete claim evidence. */
 export function verifyVestingSnapshot(snapshotInput: unknown, planInput: unknown, claimsInput: unknown, requireTransactionEvents = true) {
   const supplied = vestingSnapshotSchema.parse(snapshotInput);
-  if (requireTransactionEvents && supplied.claimEvidenceMode !== "transaction-events") throw new Error("strict verification requires transaction claim events");
+  if (requireTransactionEvents && supplied.claimEvidenceMode !== "finalized-chain-events") throw new Error("strict verification requires finalized chain claim events");
   const expected = buildVestingSnapshot(planInput, supplied.asOf, claimsInput);
-  if (canonical(supplied) !== canonical(expected)) throw new Error("vesting snapshot does not match recomputed source evidence");
+  if (canonicalJson(supplied) !== canonicalJson(expected)) throw new Error("vesting snapshot does not match recomputed source evidence");
   return {
     verified: true,
     asOf: supplied.asOf,

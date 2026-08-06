@@ -13,6 +13,9 @@ import { verifyBridgeSnapshot } from "./bridge/invariants.js";
 import { assertProductionConfiguration } from "./production.js";
 import { quoteAiUsage } from "./ai/pricing.js";
 import { buildAllocationCommitment, buildVestingSnapshot, validateApprovedAllocationPlan, verifyVestingSnapshot } from "./tokenomics.js";
+import { databaseConfigurationSummary, loadDatabaseConfiguration } from "./database/config.js";
+import { disconnectDatabase, getDatabaseClient } from "./database/client.js";
+import { inspectPrismaDatabaseReadiness } from "./database/readiness.js";
 
 const program = new Command()
   .name("jarvis-token")
@@ -168,6 +171,28 @@ program.command("verify-vesting-snapshot")
       !allowLegacyAggregate,
     );
     console.log(`Verified vesting snapshot ${result.snapshotSha256}`);
+  });
+
+program.command("validate-database-config")
+  .option("--production", "Require separated TLS runtime and migration connections", false)
+  .description("Validate Neon, Supabase, or PostgreSQL connection roles without connecting or exposing credentials")
+  .action(({ production }: { production: boolean }) => {
+    console.log(JSON.stringify(databaseConfigurationSummary(loadDatabaseConfiguration(process.env, production)), null, 2));
+  });
+
+program.command("check-database-readiness")
+  .description("Read-only check of committed migrations, expected tables, and RLS coverage")
+  .action(async () => {
+    try {
+      const report = await inspectPrismaDatabaseReadiness(getDatabaseClient());
+      console.log(JSON.stringify(report, null, 2));
+      if (!report.ready) process.exitCode = 2;
+    } catch {
+      console.error("Database readiness inspection failed; verify connectivity and migration state");
+      process.exitCode = 2;
+    } finally {
+      await disconnectDatabase();
+    }
   });
 
 await program.parseAsync();

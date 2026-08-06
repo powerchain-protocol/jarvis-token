@@ -2,6 +2,43 @@
 
 ## 1.0.0-rc.0
 
+- Added PostgreSQL persistence through Prisma with an initial constrained
+  migration, Neon/Supabase connection-role validation, optimistic bridge-state
+  repositories, append-only claim/audit evidence, and verified snapshot storage.
+- Added network-bound Sui and Solana explorer helpers for transactions,
+  accounts, and Sui objects.
+- Added validated optimistic-lock repositories for guarded transaction intents
+  and AI ledgers; corrupted lifecycle, digest, and balance state fails closed.
+- Added a persistence-hardening migration for JSON object shape, digest format,
+  chain/network consistency, and database-managed update timestamps.
+- Fixed explorer type confusion by validating Sui transactions separately from
+  accounts/objects and requiring realistic Solana signature lengths.
+- Made audit payload commitments canonical and order-independent; invalid JSON,
+  non-finite numbers, malformed event names, and invalid timestamps fail closed.
+- Added shared canonical-JSON, chain/network, identifier, and ISO-time utilities;
+  transaction, audit, and explorer code now consume the same validators.
+- Added deny-by-default database access controls: RLS on all JARVIS tables,
+  revoked `PUBLIC` privileges, and conditional Supabase API-role revocation.
+- Removed locale-dependent key sorting from canonical JSON commitments so hash
+  ordering is stable across operating-system locale configurations.
+- Added a credential-safe, read-only database readiness report for committed
+  migrations, expected table presence, and complete RLS coverage.
+- Added exact decimal/base-unit parsing, formatting, bounded addition, and safe
+  subtraction helpers for JARVIS token amounts.
+- Finalized allocation claims now require chain-valid transaction identifiers
+  and cannot predate approval; tokenomics hashing uses shared locale-stable
+  canonical JSON throughout.
+- Added SUI/MIST and SOL/lamport network-fee quotes, intent-digest binding,
+  expiry checks, maximum-fee authorization, and finalized fee reconciliation.
+- Guarded transaction submission now validates chain-specific transaction IDs;
+  native network fees remain separate from JARVIS payments and refund totals.
+- Added chain/network-bound finalized block anchors for terminal transactions
+  and allocation claims, with Sui checkpoint/Solana slot data validation.
+- Added indexed finality block columns and migration/readiness integration while
+  keeping legacy database rows nullable and new terminal evidence strict.
+- Added canonical SHA-256 block-anchor commitments and database constraints that
+  enforce complete finality data by transaction status for all new writes.
+
 - Promoted the coordinated TypeScript, Sui Move, client, CLI, metadata, CI,
   documentation, and deterministic release identifiers to `1.0.0-rc.0`.
 - Renamed the canonical release archive to
@@ -29,6 +66,16 @@
 - Added strict, independent vesting-snapshot verification that recomputes every
   field from the approved plan and complete claim ledger; production checks
   reject legacy aggregate evidence by default.
+- Bound production claim evidence to successful finalized chain receipts,
+  chain-specific networks and JARVIS assets, validated addresses, custody
+  source, recipient, and observation chronology; older event formats remain
+  migration-only.
+- Added commitment-bound allocation custody metadata and require finalized
+  claims to match the approved chain, network, JARVIS asset, and custody address
+  exactly; generic legacy custody records cannot produce production evidence.
+- Fixed historical snapshot cutoffs: claims now enter supply totals only when
+  finalized evidence was observed by `asOf`, and later receipts no longer
+  mutate earlier claim-ledger or snapshot commitments.
 
 ## Documentation revision
 
@@ -69,6 +116,10 @@
   feasibility is validated, and message digests are replay-protected across IDs.
 - Fixed rate-limit semantics to include used window capacity; added chronological
   event checks, attestation-ID replay protection, and duplicate aggregation guards.
+- Added fail-closed validation of every persisted bridge transfer before
+  attestation, completion, quarantine, or in-flight aggregation; corrupted
+  thresholds, actions, transceivers, attestations, amounts, timestamps, and
+  terminal evidence are rejected.
 
 ## 1.0.0-beta.0 production-candidate refresh
 

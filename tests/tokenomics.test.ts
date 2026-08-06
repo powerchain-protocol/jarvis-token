@@ -75,28 +75,44 @@ describe("machine-readable JARVIS tokenomics", () => {
   });
 
   it("binds transaction claim events and produces tamper-evident category snapshots", () => {
+    const custodyAddress = `0x${"1".repeat(64)}`;
+    const recipientAddress = `0x${"2".repeat(64)}`;
+    const assetId = `0x${"3".repeat(64)}::jarvis::JARVIS`;
+    const claimBlockAnchor = { chain: "sui", network: "mainnet", blockHeight: "98765", blockHash: "7".repeat(44), finality: "finalized" } as const;
     const events = [
-      { claimId: "claim-event-beta", allocationId: "allocation-treasury", amountBaseUnits: "200", claimedAt: "2026-08-08T00:00:00.000Z", transactionId: "sui-transaction-beta" },
-      { claimId: "claim-event-alpha", allocationId: "allocation-treasury", amountBaseUnits: "100", claimedAt: "2026-08-07T00:00:00.000Z", transactionId: "sui-transaction-alpha" },
+      { claimId: "claim-event-beta", allocationId: "allocation-treasury", amountBaseUnits: "200", claimedAt: "2026-08-07T10:00:00.000Z", transactionId: "4".repeat(44), chain: "sui", network: "mainnet", assetId, from: custodyAddress, to: recipientAddress, finalized: true, success: true, observedAt: "2026-08-08T00:01:00.000Z", blockAnchor: claimBlockAnchor },
+      { claimId: "claim-event-alpha", allocationId: "allocation-treasury", amountBaseUnits: "100", claimedAt: "2026-08-07T00:00:00.000Z", transactionId: "5".repeat(44), chain: "sui", network: "mainnet", assetId, from: custodyAddress, to: recipientAddress, finalized: true, success: true, observedAt: "2026-08-07T00:01:00.000Z", blockAnchor: claimBlockAnchor },
     ];
-    const snapshot = buildVestingSnapshot(plan([allocation()]), "2026-08-07T12:00:00.000Z", events);
-    expect(snapshot.claimEvidenceMode).toBe("transaction-events");
+    const custodyBinding = { chain: "sui", network: "mainnet", assetId, address: custodyAddress };
+    const approvedPlan = plan([allocation({ custodyAddress, custodyBinding })]);
+    const snapshot = buildVestingSnapshot(approvedPlan, "2026-08-07T12:00:00.000Z", events);
+    expect(snapshot.claimEvidenceMode).toBe("finalized-chain-events");
     expect(snapshot.claimedBaseUnits).toBe("100");
+    expect(snapshot.includedClaimEventCount).toBe(1);
     expect(snapshot.categoryTotals.treasury!.claimedBaseUnits).toBe("100");
     expect(snapshot.snapshotSha256).toMatch(/^[a-f0-9]{64}$/);
-    expect(buildVestingSnapshot(plan([allocation()]), "2026-08-07T12:00:00.000Z", [...events].reverse()).snapshotSha256).toBe(snapshot.snapshotSha256);
-    expect(buildVestingSnapshot(plan([allocation()]), "2026-08-07T12:00:00.000Z", [{ ...events[0]!, amountBaseUnits: "201" }, events[1]!]).snapshotSha256).not.toBe(snapshot.snapshotSha256);
-    expect(() => buildVestingSnapshot(plan([allocation()]), "2026-08-09T00:00:00.000Z", [events[0]!, { ...events[1]!, claimId: events[0]!.claimId }])).toThrow(/duplicate claim event/);
-    expect(() => buildVestingSnapshot(plan([allocation()]), "2026-08-09T00:00:00.000Z", [events[0]!, { ...events[1]!, transactionId: events[0]!.transactionId }])).toThrow(/duplicate claim transaction/);
-    expect(verifyVestingSnapshot(snapshot, plan([allocation()]), events).verified).toBe(true);
-    expect(() => verifyVestingSnapshot({ ...snapshot, claimedBaseUnits: "101" }, plan([allocation()]), events)).toThrow(/does not match/);
-    expect(() => verifyVestingSnapshot(snapshot, plan([allocation({ beneficiaryClass: "changed beneficiary" })]), events)).toThrow(/does not match/);
+    expect(buildVestingSnapshot(approvedPlan, "2026-08-07T12:00:00.000Z", [...events].reverse()).snapshotSha256).toBe(snapshot.snapshotSha256);
+    expect(buildVestingSnapshot(approvedPlan, "2026-08-07T12:00:00.000Z", [{ ...events[0]!, amountBaseUnits: "201" }, events[1]!]).snapshotSha256).toBe(snapshot.snapshotSha256);
+    expect(buildVestingSnapshot(approvedPlan, "2026-08-07T12:00:00.000Z", [events[1]!]).snapshotSha256).toBe(snapshot.snapshotSha256);
+    expect(buildVestingSnapshot(approvedPlan, "2026-08-07T12:00:00.000Z", [events[0]!, { ...events[1]!, amountBaseUnits: "101" }]).snapshotSha256).not.toBe(snapshot.snapshotSha256);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [events[0]!, { ...events[1]!, claimId: events[0]!.claimId }])).toThrow(/duplicate claim event/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [events[0]!, { ...events[1]!, transactionId: events[0]!.transactionId }])).toThrow(/duplicate claim transaction/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [{ ...events[0]!, from: `0x${"4".repeat(64)}` }])).toThrow(/does not match allocation custody binding/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [{ ...events[0]!, network: "testnet", blockAnchor: { ...claimBlockAnchor, network: "testnet" } }])).toThrow(/does not match allocation custody binding/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [{ ...events[0]!, transactionId: "not-a-sui-digest" }])).toThrow(/transaction digest/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [{ ...events[0]!, blockAnchor: { ...claimBlockAnchor, network: "testnet" } }])).toThrow(/block anchor/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [{ ...events[0]!, claimedAt: "2026-08-05T00:00:00.000Z", observedAt: "2026-08-05T00:01:00.000Z" }])).toThrow(/predates allocation approval/);
+    expect(() => buildVestingSnapshot(plan([allocation({ custodyAddress })]), "2026-08-09T00:00:00.000Z", events)).toThrow(/requires allocation custody binding/);
+    expect(() => buildVestingSnapshot(approvedPlan, "2026-08-09T00:00:00.000Z", [{ ...events[0]!, finalized: false }])).toThrow();
+    expect(verifyVestingSnapshot(snapshot, approvedPlan, events).verified).toBe(true);
+    expect(() => verifyVestingSnapshot({ ...snapshot, claimedBaseUnits: "101" }, approvedPlan, events)).toThrow(/does not match/);
+    expect(() => verifyVestingSnapshot(snapshot, plan([allocation({ custodyAddress, custodyBinding, beneficiaryClass: "changed beneficiary" })]), events)).toThrow(/does not match/);
   });
 
   it("rejects legacy aggregate claims during strict verification", () => {
     const claims = [{ allocationId: "allocation-treasury", claimedBaseUnits: "100" }];
     const snapshot = buildVestingSnapshot(plan([allocation()]), "2026-08-07T12:00:00.000Z", claims);
-    expect(() => verifyVestingSnapshot(snapshot, plan([allocation()]), claims)).toThrow(/requires transaction claim events/);
+    expect(() => verifyVestingSnapshot(snapshot, plan([allocation()]), claims)).toThrow(/requires finalized chain claim events/);
     expect(verifyVestingSnapshot(snapshot, plan([allocation()]), claims, false).verified).toBe(true);
   });
 });

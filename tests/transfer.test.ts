@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateInFlightBaseUnits, completeBridgeTransfer, createBridgeTransfer, markBridgeTransferForManualReview, recordBridgeAttestation } from "../packages/token-core/src/bridge/transfer.js";
+import { calculateInFlightBaseUnits, completeBridgeTransfer, createBridgeTransfer, markBridgeTransferForManualReview, recordBridgeAttestation, validateBridgeTransferRecord } from "../packages/token-core/src/bridge/transfer.js";
 
 const config = {
   environment: "testnet", provider: "wormhole-ntt", canonicalChain: "sui", canonicalMode: "locking",
@@ -46,5 +46,16 @@ describe("bridge transfer state machine", () => {
     const sol = createBridgeTransfer({ ...input, transferId: "transfer-00000002", messageDigest: "e".repeat(64), direction: "solana-to-sui", amountBaseUnits: "50" }, config);
     expect(calculateInFlightBaseUnits([sui, sol])).toEqual({ inFlightSuiToSolanaBaseUnits: "100", inFlightSolanaToSuiBaseUnits: "50" });
     expect(() => calculateInFlightBaseUnits([sui, sui])).toThrow(/duplicate transfer/);
+  });
+
+  it("rejects corrupted persisted bridge records before every mutation", () => {
+    const pending = createBridgeTransfer(input, config);
+    expect(() => validateBridgeTransferRecord({ ...pending, threshold: 3 })).toThrow(/threshold exceeds/);
+    expect(() => recordBridgeAttestation({ ...pending, threshold: 0 }, attestation("wormhole", "a"))).toThrow();
+    expect(() => markBridgeTransferForManualReview({ ...pending, sourceAction: "burn" }, "operator quarantine")).toThrow(/actions do not match/);
+    expect(() => calculateInFlightBaseUnits([{ ...pending, amountBaseUnits: "00" }])).toThrow();
+    expect(() => calculateInFlightBaseUnits([{ ...pending, status: "ready-to-redeem" }])).toThrow(/unmet threshold/);
+    const forged = { ...pending, attestations: [{ transceiver: "attacker", attestationId: "x".repeat(16), observedAt: "2026-08-06T12:01:00.000Z" }] };
+    expect(() => calculateInFlightBaseUnits([forged])).toThrow(/unregistered transceiver/);
   });
 });

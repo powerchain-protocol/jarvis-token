@@ -13,6 +13,12 @@
       "amountBaseUnits": "18440000000000000",
       "beneficiaryClass": "temporary treasury custody",
       "custodyAddress": "replace-with-configured-treasury-address",
+      "custodyBinding": {
+        "chain": "sui",
+        "network": "mainnet",
+        "assetId": "replace-with-canonical-sui-jarvis-coin-type",
+        "address": "replace-with-configured-treasury-address"
+      },
       "locked": false,
       "vesting": {
         "curve": "immediate",
@@ -23,4 +29,3 @@
     }
   ]
 }
-

@@ -53,6 +53,12 @@ All protocol, bridge, AI-accounting, and evidence amounts are expressed as
 unsigned integer base-unit strings. Floating-point token arithmetic is not a
 valid accounting source.
 
+Application integrations should use the exported exact helpers
+`parseJarvisDecimal`, `parseJarvisBaseUnits`, `formatJarvisBaseUnits`,
+`addJarvisBaseUnits`, and `subtractJarvisBaseUnits`. They reject exponent
+notation and excess precision, enforce the fixed-supply ceiling, and prevent
+negative subtraction results.
+
 The same constants are published as machine-readable policy in
 `config/tokenomics.policy.json`. `packages/token-core/src/tokenomics.ts` binds
 allocation validation directly to the compiled token constants so a document
@@ -193,9 +199,25 @@ The vesting projection command binds every report to that allocation commitment
 and uses integer base-unit arithmetic. It reports vested, claimed, claimable,
 and unvested supply for each allocation and for the complete fixed supply.
 For production reporting, claims are a JSON event ledger containing `claimId`,
-`allocationId`, `amountBaseUnits`, `claimedAt`, and `transactionId`. Legacy
-aggregate `allocationId`/`claimedBaseUnits` inputs remain readable but are
-marked `aggregate-legacy` and do not provide transaction-level evidence.
+`allocationId`, `amountBaseUnits`, `claimedAt`, `transactionId`, `chain`,
+`network`, `assetId`, `from`, `to`, `finalized`, `success`, and `observedAt`.
+The source must equal the allocation's approved custody address. Chain-specific
+networks, Sui addresses and coin types, Solana public keys, and chain-specific
+transaction identifiers are validated. A claim cannot predate approval of its
+allocation plan.
+Each finalized claim also includes a chain/network-matched finalized block
+anchor, binding the evidence to a Sui checkpoint or Solana slot rather than a
+transaction identifier alone.
+Only successful finalized receipts qualify. Legacy transaction or aggregate
+inputs remain readable but are marked as legacy and do not qualify as strict
+production evidence.
+
+Every allocation used with finalized claim evidence must include a
+`custodyBinding` containing `chain`, `network`, `assetId`, and `address`. The
+binding is part of the allocation commitment. Its address must equal the
+allocation's custody address, and every finalized claim must exactly match all
+four fields. Older allocations without a binding remain readable but cannot
+produce finalized production evidence.
 Duplicate claim or transaction IDs, unknown allocations, non-canonical amounts,
 and claims above the amount vested at the event timestamp fail closed. Linear vesting floors fractional base units; a cliff
 blocks claims until its timestamp and then exposes the cumulative linear amount.
@@ -210,10 +232,17 @@ schedule, or report timestamp changes at least one commitment. Publish the
 claim ledger and snapshot together so independent reviewers can reproduce both
 hashes.
 
+An event enters an `asOf` snapshot only after its finalized receipt's
+`observedAt` timestamp. A transaction claimed before the cutoff but finalized
+or observed afterward is excluded. The claim-ledger commitment covers only the
+events included at that cutoff, so adding later receipts cannot retroactively
+change a previously published historical snapshot. `includedClaimEventCount`
+makes the cutoff population explicit.
+
 The verification command parses the report strictly and recomputes every field
 from the approved allocation plan and complete claim ledger. It rejects changed
 totals, categories, timestamps, commitments, allocations, unknown fields, or
-different source evidence. Strict verification requires transaction events;
+different source evidence. Strict verification requires finalized chain events;
 `--allow-legacy-aggregate` exists only for migration of older reports and must
 not be used as production evidence.
 

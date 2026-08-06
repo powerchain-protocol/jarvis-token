@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model BridgeTransfer {
+  transferId        String   @id @map("transfer_id")
+  messageDigest     String   @unique @map("message_digest")
+  direction         String
+  status            String
+  amountBaseUnits   String   @map("amount_base_units")
+  version            Int      @default(1)
+  payload            Json
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  attestations       BridgeAttestation[]
+
+  @@unique([transferId, version])
+  @@index([status, direction])
+  @@map("bridge_transfers")
+}
+
+model BridgeAttestation {
+  attestationId String         @id @map("attestation_id")
+  transferId    String         @map("transfer_id")
+  transceiver   String
+  observedAt    DateTime       @map("observed_at")
+  payload       Json
+  transfer      BridgeTransfer @relation(fields: [transferId], references: [transferId], onDelete: Cascade)
+
+  @@unique([transferId, transceiver])
+  @@index([transferId, observedAt])
+  @@map("bridge_attestations")
+}
+
+model AllocationPlan {
+  allocationCommitmentSha256 String   @id @map("allocation_commitment_sha256")
+  tokenVersion               String   @map("token_version")
+  governanceRecord           String   @map("governance_record")
+  approvedAt                 DateTime @map("approved_at")
+  payload                    Json
+  createdAt                  DateTime @default(now()) @map("created_at")
+  claims                     ClaimEvent[]
+  snapshots                  VestingSnapshot[]
+
+  @@index([approvedAt])
+  @@map("allocation_plans")
+}
+
+model ClaimEvent {
+  claimId                    String         @id @map("claim_id")
+  transactionId              String         @unique @map("transaction_id")
+  allocationCommitmentSha256 String         @map("allocation_commitment_sha256")
+  allocationId               String         @map("allocation_id")
+  chain                      String
+  network                    String
+  amountBaseUnits            String         @map("amount_base_units")
+  claimedAt                  DateTime       @map("claimed_at")
+  observedAt                 DateTime       @map("observed_at")
+  finalityBlockHeight        String?        @map("finality_block_height")
+  finalityBlockHash          String?        @map("finality_block_hash")
+  finalityAnchorDigest       String?        @map("finality_anchor_digest")
+  payload                    Json
+  allocation                 AllocationPlan @relation(fields: [allocationCommitmentSha256], references: [allocationCommitmentSha256], onDelete: Restrict)
+
+  @@index([allocationCommitmentSha256, observedAt])
+  @@index([chain, network, transactionId])
+  @@map("claim_events")
+}
+
+model VestingSnapshot {
+  snapshotSha256             String         @id @map("snapshot_sha256")
+  allocationCommitmentSha256 String         @map("allocation_commitment_sha256")
+  claimLedgerSha256          String         @map("claim_ledger_sha256")
+  asOf                       DateTime       @map("as_of")
+  payload                    Json
+  createdAt                  DateTime       @default(now()) @map("created_at")
+  allocation                 AllocationPlan @relation(fields: [allocationCommitmentSha256], references: [allocationCommitmentSha256], onDelete: Restrict)
+
+  @@unique([allocationCommitmentSha256, asOf])
+  @@index([asOf])
+  @@map("vesting_snapshots")
+}
+
+model TransactionIntentRecord {
+  intentId          String   @id @map("intent_id")
+  nonce             String   @unique
+  businessReference String   @unique @map("business_reference")
+  payloadDigest     String   @unique @map("payload_digest")
+  chain             String
+  network           String
+  status            String
+  finalityBlockHeight String?  @map("finality_block_height")
+  finalityBlockHash   String?  @map("finality_block_hash")
+  finalityAnchorDigest String? @map("finality_anchor_digest")
+  version           Int      @default(1)
+  payload           Json
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@unique([intentId, version])
+  @@index([status, chain, network])
+  @@map("transaction_intents")
+}
+
+model AiLedgerState {
+  ledgerId  String   @id @map("ledger_id")
+  accountId String   @unique @map("account_id")
+  version   Int      @default(1)
+  payload   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([ledgerId, version])
+  @@map("ai_ledger_states")
+}
+
+model AuditEvent {
+  id           String   @id @default(cuid())
+  aggregateType String  @map("aggregate_type")
+  aggregateId   String  @map("aggregate_id")
+  eventType     String  @map("event_type")
+  payloadDigest String  @map("payload_digest")
+  payload       Json
+  occurredAt    DateTime @map("occurred_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([aggregateType, aggregateId, occurredAt])
+  @@index([eventType, occurredAt])
+  @@map("audit_events")
+}
