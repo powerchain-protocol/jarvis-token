@@ -1,11 +1,15 @@
 import fs from "node:fs";
+import path from "node:path";
 import crypto from "node:crypto";
+import { fileURLToPath } from "node:url";
 
-const mainnetToml = fs.readFileSync("token/contracts/sui-mainnet/Move.toml", "utf8");
-const testnetToml = fs.readFileSync("token/contracts/sui-testnet/Move.toml", "utf8");
-const mainnetSource = fs.readFileSync("token/contracts/sui-mainnet/sources/jarvis.move");
-const testnetSource = fs.readFileSync("token/contracts/sui-testnet/sources/jarvis.move");
-const bridgeReadme = fs.readFileSync("contracts/jarvis_bridge/README.md", "utf8");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+const mainnetToml = fs.readFileSync(path.join(root, "contracts/sui-mainnet/Move.toml"), "utf8");
+const testnetToml = fs.readFileSync(path.join(root, "contracts/sui-testnet/Move.toml"), "utf8");
+const mainnetSource = fs.readFileSync(path.join(root, "contracts/sui-mainnet/sources/jarvis.move"));
+const testnetSource = fs.readFileSync(path.join(root, "contracts/sui-testnet/sources/jarvis.move"));
+const bridgeReadme = fs.readFileSync(path.join(root, "contracts/README.md"), "utf8");
 
 if (!mainnetToml.includes('rev = "mainnet"')) throw new Error("Canonical Sui profile must target the Sui mainnet revision");
 if (!testnetToml.includes('rev = "framework/testnet"')) throw new Error("Testnet Sui profile must target framework/testnet");
