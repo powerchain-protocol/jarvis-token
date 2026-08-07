@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "asset": "jarvis",
+  "chain": "solana",
+  "representation": "bridged",
+  "provider": "wormhole",
+  "standard": "Token-2022",
+  "decimals": 6,
+  "mint": null,
+  "genesisSupplyBaseUnits": "0",
+  "freezeAuthority": null,
+  "verified": false,
+  "displayTicker": "JARVIS"
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/allocation-claim-request.schema.json",
+  "title": "JARVIS Allocation Claim Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "claimId",
+    "allocationId",
+    "beneficiary",
+    "amountBaseUnits",
+    "requestedAt"
+  ],
+  "properties": {
+    "claimId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "allocationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "beneficiary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "amountBaseUnits": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "requestedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

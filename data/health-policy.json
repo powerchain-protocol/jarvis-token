@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 2,
+  "asset": "jarvis",
+  "checks": [
+    {
+      "id": "identity",
+      "required": true
+    },
+    {
+      "id": "representation",
+      "required": true
+    },
+    {
+      "id": "metadata-integrity",
+      "required": true
+    },
+    {
+      "id": "authorities",
+      "required": true
+    },
+    {
+      "id": "reserve-invariant",
+      "required": true
+    },
+    {
+      "id": "wormhole-route",
+      "required": true
+    },
+    {
+      "id": "bridge",
+      "required": false
+    }
+  ],
+  "states": [
+    "healthy",
+    "degraded",
+    "unavailable"
+  ],
+  "operationalRequires": [
+    "verified-deployment",
+    "verified-wormhole-route",
+    "reserve-monitor",
+    "emergency-pause"
+  ]
+}

@@ -1,6 +1,6 @@
 # JARVIS tokenomics
 
-**Asset:** Jarvis AI (`JARVIS`)  
+**Asset:** JARVIS (`JARVIS`)  
 **Specification version:** `1.0.0-rc.0`  
 **Status:** Configuration-ready release candidate; deployment and distribution
 are not verified.
@@ -11,7 +11,7 @@ promise token value, or claim a mainnet deployment.
 
 ## Executive summary
 
-JARVIS is a fixed-supply utility and settlement asset for Jarvis AI services.
+JARVIS is a fixed-supply utility and settlement asset for JARVIS platform services.
 Exactly 18.44 billion canonical JARVIS are created once on Sui. The complete
 initial supply is delivered to one configured treasury address, after which the
 Sui `TreasuryCap` is destroyed. No canonical inflation function remains.
@@ -30,7 +30,7 @@ not create or destroy JARVIS.
 
 | Property | Policy value |
 |---|---:|
-| Name | Jarvis AI |
+| Name | JARVIS |
 | Symbol | JARVIS |
 | Version | 1.0.0-rc.0 |
 | Decimals | 6 |
@@ -41,7 +41,7 @@ not create or destroy JARVIS.
 | Canonical chain | Sui |
 | Initial canonical recipient | One configured treasury address |
 | Solana standard | Token-2022 |
-| Solana genesis supply | 0 wrapped JARVIS |
+| Solana genesis supply | 0 bridged JARVIS |
 
 The conversion is exact:
 
@@ -60,7 +60,7 @@ notation and excess precision, enforce the fixed-supply ceiling, and prevent
 negative subtraction results.
 
 The same constants are published as machine-readable policy in
-`config/tokenomics.policy.json`. `packages/token-core/src/tokenomics.ts` binds
+`token/config/tokenomics.policy.json`. `packages/token-core/src/tokenomics.ts` binds
 allocation validation directly to the compiled token constants so a document
 or template cannot redefine the supply.
 
@@ -81,7 +81,7 @@ The package exposes no later mint or burn entry point. A conformant deployment
 must prove the `TreasuryCap` cannot be used and the treasury received the full
 initial amount. An upgrade path must not be used to restore inflationary power.
 
-### Wrapped Solana issuance
+### Bridged Solana representation
 
 The Token-2022 mint begins with zero units and no freeze authority. Its mint
 authority is handed to the independently derived Wormhole NTT token-authority
@@ -90,13 +90,13 @@ require it.
 
 Wrapped minting is representation, not monetary issuance:
 
-| Direction | Canonical action | Wrapped action | Global effect |
+| Direction | Canonical action | Bridged action | Global effect |
 |---|---|---|---|
 | Sui → Solana | Lock JARVIS in NTT custody | Mint equal Token-2022 units | None |
 | Solana → Sui | Release equal JARVIS from custody | Burn Token-2022 units first | None |
 
 No operator, treasury, metadata authority, AI agent, model provider, fee payer,
-or application account is permitted to mint wrapped JARVIS outside the audited
+or application account is permitted to mint bridged JARVIS outside the audited
 bridge path.
 
 ## Supply invariants
@@ -105,7 +105,7 @@ At every finalized observation checkpoint:
 
 ```text
 Sui circulating + Sui locked = 18,440,000,000,000,000
-Solana wrapped + cross-chain obligations in flight = Sui locked
+Solana bridged + cross-chain obligations in flight = Sui locked
 ```
 
 The implementation's snapshot convention must be used consistently when
@@ -175,10 +175,10 @@ Approved schedules use integer basis points (`10,000 = 100%`). Validate a final
 schedule before review:
 
 ```bash
-npm run jarvis -- validate-allocation --file allocation-plan.json
-npm run jarvis -- commit-allocation --file allocation-plan.json --out artifacts/allocation-commitment.json
-npm run jarvis -- project-vesting --file allocation-plan.json --as-of 2027-01-01T00:00:00.000Z --claims claims.json --out artifacts/vesting-snapshot.json
-npm run jarvis -- verify-vesting-snapshot --snapshot artifacts/vesting-snapshot.json --file allocation-plan.json --claims claims.json
+pnpm jarvis -- validate-allocation --file allocation-plan.json
+pnpm jarvis -- commit-allocation --file allocation-plan.json --out artifacts/allocation-commitment.json
+pnpm jarvis -- project-vesting --file allocation-plan.json --as-of 2027-01-01T00:00:00.000Z --claims claims.json --out artifacts/vesting-snapshot.json
+pnpm jarvis -- verify-vesting-snapshot --snapshot artifacts/vesting-snapshot.json --file allocation-plan.json --claims claims.json
 ```
 
 The validator requires exact percentage and base-unit totals, amount-to-basis-
@@ -309,14 +309,14 @@ mechanism is asserted.
 Administrative governance is limited by operational policy:
 
 - Sui canonical minting authority is irreversibly removed.
-- Solana wrapped minting is limited to the verified NTT authority.
+- Solana bridged minting is limited to the verified NTT authority.
 - Freeze authority is absent.
 - Metadata and bridge administration use separated, reviewed authority paths.
 - Mainnet signing requires simulation, multisig/MPC approval, and independent
   evidence review.
 
 No governance vote or administrator may legitimately waive the collateral
-invariant and mint unbacked wrapped JARVIS.
+invariant and mint unbacked bridged JARVIS.
 
 ## Transparency and reporting
 

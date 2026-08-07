@@ -1,212 +1,354 @@
-# JARVIS cross-chain token
+# JARVIS Token
 
-Production-candidate source and guarded deployment tooling for canonical
-fixed-supply JARVIS on Sui and bridge-backed Token-2022 JARVIS on Solana.
+Canonical token source and guarded deployment specifications for **JARVIS on Sui** and its official **bridged Token-2022 representation on Solana**.
 
-This repository does **not** claim a deployment. It does not contain a
-broadcast path, private key loader, seed phrase handler, or mainnet signing
-automation.
+This directory is the source of truth for token identity, monetary policy, canonical Sui issuance code, Solana representation profiles, metadata, and artwork. Cross-chain bridge execution remains a platform capability under the root `contracts/`, `programs/`, `packages/domains/bridge/`, and infrastructure adapters.
 
-“Mintable JARVIS” means the Solana wrapped mint is controlled by the verified
-Wormhole NTT token authority. It can mint only as part of lock/mint bridging
-against Sui collateral. Canonical Sui supply is not mintable after publication.
+> This repository does not itself prove a Mainnet deployment. Public package IDs, object IDs, mints, NTT managers, and bridge identities must be independently verified before activation.
 
-Start with the [documentation index](docs/README.md),
-[Introduction](docs/introduction.md), [Installation](docs/installation.md), and
-[Deployment instructions](docs/deployment.md). Security operators must
-also review [Security policy](SECURITY.md), [Threat model](docs/threat-model.md),
-and [Incident response](docs/incident-response.md).
-The AI settlement model is documented in [JARVIS AI utility](docs/ai-utility.md).
-Payment lifecycle controls are documented in [Guarded transactions](docs/transactions.md).
-Persistence, Prisma migrations, Neon, and Supabase configuration are documented
-in [Database integration](docs/database.md).
-The frozen monetary policy is documented in [Tokenomics](TOKENOMICS.md),
-and live bridge procedures are documented in
-[Bridge operations](docs/bridge-operations.md).
+## Canonical model
 
-## Repository layout
+```text
+JARVIS
+├── Sui
+│   ├── type: canonical
+│   ├── decimals: 6
+│   └── fixed supply: 18,440,000,000
+└── Solana
+    ├── type: bridged
+    ├── provider: Wormhole NTT
+    ├── standard: Token-2022
+    └── genesis supply: 0
+```
 
-- `programs/{mainnet,testnet}/jarvis/` contains public Token-2022 program
-  profiles. There is intentionally no custom Solana JARVIS program.
-- `clients/typescript/src/jarvis/` contains the supported non-signing client.
-- `packages/token-core/src/utils/` contains shared canonical JSON, chain,
-  identifier, and timestamp helpers used by security-sensitive modules.
-- `prisma/` contains the PostgreSQL schema and immutable migration history for
-  Neon, Supabase, or standard PostgreSQL deployments.
-- `contracts/jarvis/` contains the canonical mainnet Sui package.
-- `testnet-contract/jarvis/` contains the testnet Sui package mirror.
-- `scripts/`, `tests/`, and `target/` contain operations, verification, and
-  public deployment profiles.
-- `public/assets/` contains the canonical and theme-specific token images;
-  `metadata/metadata.json` binds each image to its SHA-256 digest.
-- `contracts/walrus/` contains the standalone `walrus::metadata` Move utility.
+The effective cross-chain invariant is exact 1:1 backing. Dynamic SUI/SOL network and priority fees are separate transaction costs and never reduce the JARVIS amount being represented.
+
+## Directory layout
+
+```text
+token/
+├── README.md
+├── TOKENOMICS.md
+├── STRUCTURE.md
+├── assets/                         # canonical artwork + generated runtime sizes
+├── common/                         # provider-neutral token types
+├── constants/                      # immutable identity/supply/routes
+├── context/                        # deployment/environment context
+├── data/                           # derived registry/index data
+├── database/schemas/               # portable persistence contracts
+├── functions/                      # pure token business functions
+├── security/                       # authority/activation/secret policy
+├── storage/                        # provider-neutral storage contracts
+├── ui/                             # labels, badges, token CSS
+├── utils/                          # precision, identities, hashing
+├── validation/                     # canonical model validation
+├── config/
+│   ├── asset.json                  # canonical asset/representation registry
+│   ├── tokenomics.policy.json      # frozen monetary policy
+│   ├── allocation-policy.json      # allocation enforcement policy
+│   └── treasury-policy.example.json # governance template; not production approval
+├── contracts/
+│   ├── sui-mainnet/                # canonical Sui Move package
+│   └── sui-testnet/                # Testnet package mirror
+├── docs/
+│   ├── tokenomics.md
+│   └── tokenomics-enforcement.md
+├── metadata/
+│   ├── metadata.json
+│   ├── sui.json
+│   ├── solana.json
+│   ├── security.json
+│   ├── logo-manifest.json
+│   ├── asset-manifest.json
+│   └── integrity-manifest.json
+├── scripts/                        # token-local build/validation tooling
+└── programs/
+    └── solana/
+        ├── mainnet-token-2022.json
+        └── testnet-token-2022.json
+```
+
+See [`STRUCTURE.md`](STRUCTURE.md) for ownership boundaries.
 
 ## Frozen tokenomics
 
 | Property | Value |
-|---|---:|
-| Name | Jarvis AI |
+| --- | ---: |
+| Name | JARVIS |
 | Symbol | JARVIS |
 | Decimals | 6 |
 | Whole-token supply | 18,440,000,000 |
 | Base-unit supply | 18,440,000,000,000,000 |
-| Origin | Sui treasury only |
-| Solana genesis supply | 0 wrapped JARVIS |
+| Canonical chain | Sui |
+| Solana genesis supply | 0 |
+| Solana representation | Bridged · Wormhole NTT · Token-2022 |
 
-## AI utility
+Full policy: [`TOKENOMICS.md`](TOKENOMICS.md) and [`config/tokenomics.policy.json`](config/tokenomics.policy.json).
 
-The TypeScript package provides deterministic multimodal usage quotes,
-idempotent reservations, settlement/refund logic, tokenized chat and agent
-budgets, digest-only turn receipts, and MPC approval-policy state. It does not
-call LLM providers, store prompts, manage key shares, sign, or broadcast. AI
-usage accounting never changes the fixed JARVIS supply.
+## Sui canonical issuance
 
-Public token helpers parse and format up to six decimal places using exact
-integer arithmetic, with fixed-supply overflow and subtraction-underflow
-protection. Exponent notation and non-canonical decimal forms are rejected.
+The canonical package lives in [`contracts/sui-mainnet/`](contracts/sui-mainnet/). The Testnet mirror lives in [`contracts/sui-testnet/`](contracts/sui-testnet/).
 
-Transaction functions create canonical hash-bound payment/refund intents,
-require exact MPC proposal binding, enforce replay/expiry/address/amount rules,
-and reconcile finalized receipts. They intentionally expose no signing or
-broadcasting function.
+The token package is designed so that:
 
-## Design
+- the fixed supply is created at publication;
+- the `TreasuryCap` is consumed into frozen supply accounting;
+- metadata is frozen;
+- no public mint path remains after canonical initialization;
+- bridge operations do not create new canonical supply.
 
-### Cross-chain model
+`scripts/sync-contracts.sh` synchronizes the canonical Move source into compatibility/test layouts and validators detect drift.
 
-The Sui coin is the only origin of supply. Wormhole Native Token Transfers
-(NTT) runs in locking mode on Sui and burning mode on Solana. A Sui→Solana
-transfer locks canonical coins and mints an equal wrapped amount. The reverse
-burns wrapped coins before releasing canonical coins. See
-`bridge/wormhole/README.md` for lifecycle, invariants, risks, and operations.
+## Solana representation
 
-The TypeScript client includes a non-signing transfer state machine with pause,
-rate-limit, replay, digest, unique-attestation threshold, completion, quarantine,
-and in-flight aggregation logic. Actual attestations and redemptions remain the
-responsibility of the pinned upstream NTT integration.
+The public Token-2022 representation profiles live under [`programs/solana/`](programs/solana/).
 
-Only explicitly configured transceiver identities count toward the threshold;
-the configuration rejects duplicates and thresholds larger than the unique
-allowlist. Both transfer IDs and bridge message digests are replay-protected.
-Rate limits account for capacity already consumed in the active window, rather
-than merely limiting each transfer. Attestation and completion timestamps must
-be chronological, and attestation identifiers are replay-protected.
+The official Solana representation:
 
-### Solana wrapped asset
+- uses Token-2022;
+- starts at zero supply;
+- has no independent issuance schedule;
+- is minted only through the verified bridge authority against canonical Sui backing;
+- is burned before canonical Sui assets are released on the return route;
+- is displayed to users as **JARVIS · Bridged**, not as a separate asset identity.
 
-- Token-2022 is mandatory.
-- Canonical metadata is stored directly on the mint through the Token Metadata
-  extension; the Metadata Pointer points back to the mint.
-- Freeze authority is never configured.
-- Genesis supply is zero; the plan contains no mint-to instruction.
-- Mint authority is handed to the verified NTT token-authority address and is
-  not revoked, because bridge-controlled mint/burn is required.
-- Metadata-pointer and metadata-update authorities are revoked after setup.
-- Plans contain unsigned transaction-message bytes and required public signers.
-  They expire with their recent blockhash and must be regenerated before use.
-- Generated plans retain only the public RPC origin; credentials, paths, query
-  parameters, and fragments are removed.
-- Mainnet configuration requires distinct treasury, fee-payer, mint,
-  mint-authority, and metadata-authority public keys plus a recorded review
-  acknowledgement.
+Executable bridge policy remains at [`../programs/solana-jarvis-bridge/`](../programs/solana-jarvis-bridge/) because it belongs to the Bridge domain rather than canonical token issuance.
 
-### Sui
+## Metadata and artwork
 
-- `init` runs only on package publication.
-- The complete supply is minted to the publishing address.
-- `coin::treasury_into_supply` consumes and deletes the `TreasuryCap` object.
-- The resulting `Supply` is enclosed in a `FixedSupply` object and frozen.
-- Metadata is frozen. There is no mint or burn entry point in the package.
+Canonical metadata is stored at [`metadata/metadata.json`](metadata/metadata.json). Source artwork lives in [`assets/`](assets/).
 
-Sui package layouts:
-
-- `contracts/jarvis/` is the canonical mainnet package.
-- `testnet-contract/jarvis/` pins the testnet framework profile.
-- `packages/jarvis-sui/` is retained as a compatibility layout.
-- `scripts/sync-contracts.sh` copies the canonical Move source to both mirrors;
-  tests fail if any source drifts.
-
-The Sui plan builder rejects configurations where the publish sender does not
-exactly equal the approved treasury address. Confirm the active CLI address
-again before any signing ceremony.
-
-## Commands
+Application-facing runtime copies live in `../public/assets/` and are generated/synchronized from this directory:
 
 ```bash
-npm install
-npm run check
-npm test
-
-# Validate the schema, then apply committed migrations through DIRECT_URL.
-npm run db:validate
-npm run db:migrate:status
-npm run db:migrate:deploy
-npm run db:readiness
-
-# Generates artifacts only; refuses to overwrite an existing output file.
-npm run jarvis -- plan-solana-wrapped --config config/mainnet.json --out artifacts/solana-plan.json
-npm run jarvis -- plan-ntt --config bridge/wormhole/ntt.testnet.json --out artifacts/ntt-plan.json
-npm run jarvis -- verify-bridge-snapshot --file snapshot.json --out artifacts/bridge-report.json
-npm run jarvis -- plan-sui --config config/sui-mainnet.json --out artifacts/sui-plan.json
-
-# Read-only independent inspection.
-npm run jarvis -- verify-solana --rpc-url <RPC_URL> --mint <MINT> --bridge-authority <NTT_AUTHORITY> --metadata-uri <URI> --out artifacts/verify.json
-npm run jarvis -- validate-evidence --file evidence.json
-npm run jarvis -- validate-release-evidence --file release-evidence.json
-npm run jarvis -- quote-ai-usage --usage config/ai-usage.example.json --schedule config/ai-price-schedule.example.json --quoted-at 2026-08-06T12:00:00.000Z --out artifacts/ai-quote.json
-npm run jarvis -- validate-allocation --file allocation-plan.json
-npm run jarvis -- commit-allocation --file allocation-plan.json --out artifacts/allocation-commitment.json
-npm run jarvis -- project-vesting --file allocation-plan.json --as-of 2027-01-01T00:00:00.000Z --claims claims.json --out artifacts/vesting-snapshot.json
-npm run jarvis -- verify-vesting-snapshot --snapshot artifacts/vesting-snapshot.json --file allocation-plan.json --claims claims.json
-npm run jarvis -- validate-database-config --production
-
-# Fails closed when mandatory production dependencies such as Sui CLI are absent.
-bash scripts/production-readiness.sh config/mainnet.json config/ntt-mainnet.json
-bash scripts/reproducibility-check.sh
-bash scripts/verify-release.sh target/releases/jarvis-token-1.0.0-rc.0.tar.gz target/releases/SHA256SUMS
+pnpm token:assets:sync
+pnpm token:schemas:validate
+pnpm token:integrity:verify
 ```
 
-## Required production review
+Do not edit runtime copies as the source of truth.
 
-Before signing or submission:
+## Bridge integration
 
-1. Replace every placeholder and independently verify each public address.
-2. Host the canonical metadata JSON at a durable URI and update its image URI.
-3. Build and test the Sui package against the exact mainnet framework revision.
-4. Simulate every transaction against the target network.
-5. Verify Sui fixed supply, zero Solana genesis supply, and NTT authority handoff.
-6. Exercise lock/mint and burn/release on testnet and reconcile all supply states.
-7. Publish transaction signatures/digests and explorer links.
-8. Have a separate operator run the verifier and sign the evidence record.
+The supported canonical routes are:
 
-Never commit private keys, keypair JSON, mnemonics, or signing-service tokens.
+```text
+jarvis:sui:solana:wormhole-ntt
+jarvis:solana:sui:wormhole-ntt
+```
 
-## Production status
+Sui → Solana locks canonical JARVIS and creates the official bridged representation. Solana → Sui burns the bridged representation before canonical assets are released.
 
-The code is structured as a production candidate, not a declaration of
-production readiness. Mainnet remains blocked until the pinned Sui and NTT
-releases compile and pass tests, project-specific security review is complete,
-testnet acceptance succeeds, multisig and monitoring are operational, and
-independent deployment evidence is published.
+Operational and recovery documentation remains platform-level:
 
-The current audit reports a high-severity advisory in the legacy Solana SDK
-dependency tree with no npm fix. The fail-closed security gate blocks mainnet
-readiness until migration/upstream remediation or an approved, time-limited
-risk acceptance. See `SECURITY.md`.
+- [Bridge configuration](../docs/bridge-configuration.md)
+- [Bridge operations](../docs/bridge-operations.md)
+- [Sui → Solana transfer](../docs/transfer-sui-to-solana.md)
+- [Bridge programs](../docs/bridge-programs.md)
 
-Production validation rejects placeholder identities and ensures that the
-Solana deployment and NTT configuration name the exact same mint and bridge
-token authority before any plan is accepted.
+## Sui Testnet development
 
-AI usage counters reject JavaScript-unsafe integers. All AI rates, quotes,
-balances, reservations, chat budgets, settlements, and MPC payments use
-canonical integer strings and cannot exceed the fixed global JARVIS supply.
+```bash
+pnpm setup:sui
+pnpm doctor:sui
+pnpm build:sui
+ppnpm test:sui
+```
 
-The final evidence bundle must reconcile Sui locked/circulating supply with
-Solana wrapped/in-flight supply, cross-check bridge identities, record at least
-three artifact hashes, and contain approvals from two distinct reviewers.
+After `sui client` generates an address, fund only the **public Testnet address** through `https://faucet.sui.io`. Never place a recovery phrase, private key, or `sui.keystore` contents in Git, `.env`, CI, logs, or documentation.
 
-Release packaging is deterministic with `SOURCE_DATE_EPOCH`, normalized file
-ownership/timestamps, stable ordering, and gzip timestamps disabled. Packaging
-also emits `SOURCE-MANIFEST.sha256` and `SHA256SUMS`; verify both source inputs
-and the final archive before recording hashes in release evidence.
+## Token validation
+
+```bash
+pnpm validate:token-layout
+pnpm validate:asset-platform
+pnpm validate:bridge-routing
+ppnpm test:core
+```
+
+The layout validator prevents token-specific files from drifting back to the repository root or deprecated paths.
+
+## Related documentation
+
+- [Platform root README](../README.md)
+- [Tokenomics](TOKENOMICS.md)
+- [Tokenomics implementation notes](docs/tokenomics.md)
+- [Platform architecture](../docs/PLATFORM_ARCHITECTURE.md)
+- [Asset-first architecture](../docs/engineering/asset-first-platform.md)
+- [Canonical assets and fees](../docs/engineering/canonical-assets-and-fees.md)
+- [Security policy](../SECURITY.md)
+
+## Token subsystem APIs
+
+The token source tree includes dependency-light TypeScript modules for canonical asset construction, exact decimal conversion, representation lookup, reserve invariants, deployment security, context resolution, storage contracts, and UI labels. They intentionally do not import Sui, Solana, Wormhole, wallet, or RPC SDKs.
+
+```bash
+pnpm token:validate
+pnpm token:typecheck
+pnpm token:security:audit
+pnpm token:logos:build
+pnpm token:metadata:generate
+pnpm token:assets:sync
+```
+
+User-facing products retain the ticker **JARVIS** on every network and show **Canonical** or **Bridged** status. Legacy wrapped-token naming is not a public asset identity.
+
+## Token subsystem architecture
+
+The token directory is intentionally dependency-light and can be validated without connecting to Sui, Solana, Wormhole, Helius, or Triton.
+
+```text
+Token identity
+    ↓
+Constants + metadata
+    ↓
+Pure business functions
+    ↓
+Validation + security policy
+    ↓
+Deployment context + health
+    ↓
+Storage/audit snapshots
+    ↓
+Platform adapters and UI
+```
+
+### Security and readiness
+
+`createJarvisTokenContext()` does not treat a feature flag as proof that JARVIS is deployable. Bridge activation additionally requires the canonical Sui coin type, official Solana mint, Wormhole provider identity, and explicit deployment verification evidence.
+
+The Solana representation security policy requires the configured bridge authority to own minting, disables freeze authority, and requires zero genesis supply for the bridged representation.
+
+### Storage and audit data
+
+`storage/` defines provider-neutral storage contracts for canonical asset state and immutable snapshots. Portable schemas under `database/schemas/` cover representations, deployment evidence, supply reconciliation, reserve reconciliation, token health, authority snapshots, and domain events. Token amounts are represented as integer base-unit strings at persistence boundaries.
+
+### UI/UX policy
+
+The UI always presents one asset identity—**JARVIS**—with a representation badge:
+
+- **Canonical** on Sui uses the green JARVIS token artwork.
+- **Bridged** on Solana retains the JARVIS ticker and uses an explicit Bridged badge.
+- The platform must not invent `wJARVIS` as a user-facing ticker.
+- Token icons must include useful alt text and support reduced-motion/high-contrast interfaces.
+- Responsive PNG and lossless WebP derivatives are generated at 16/32/64/128/180/192/256/512px and verified by SHA-256.
+
+Reusable presentation helpers live in `ui/token-presentation.ts`; token-specific CSS lives in `ui/tokens.css`.
+
+### Token-only quality gate
+
+```bash
+pnpm token:metadata:generate
+pnpm token:registry:generate
+pnpm token:assets:verify
+pnpm token:schemas:validate
+pnpm token:integrity:verify
+pnpm token:validate
+pnpm token:typecheck
+pnpm token:test
+pnpm token:security:audit
+```
+
+Run all of these with:
+
+```bash
+pnpm token:check
+```
+
+A deterministic source bundle can be generated with:
+
+```bash
+pnpm token:package
+```
+
+
+## Runtime safety model
+
+`JARVIS_BRIDGE_ENABLED=true` is only a request to activate transfers. Runtime activation also requires deployment readiness, verified Wormhole routing, reserve monitoring, and an emergency-pause configuration. `createJarvisTokenContext()` exposes both `requestedBridgeEnabled` and the effective `bridgeEnabled` value so UI and operators cannot confuse intent with readiness.
+
+Token storage uses optimistic versions for canonical asset writes. Production adapters should map this contract to a database transaction or compare-and-swap update; stale writers must fail with `STORAGE_CONFLICT`.
+
+All public interfaces continue to display the ticker `JARVIS`. Chain-specific implementation details belong in representation badges and developer metadata, never renamed user-facing assets.
+
+
+## On-chain verification and reserve monitoring
+
+Before enabling transfers, infrastructure adapters should fetch the canonical Sui coin observation and official Solana Token-2022 mint observation and pass them to `verifyOnChainJarvis()`. The domain verifier checks identity, six-decimal precision, supply ceilings, and the absence of a Solana freeze authority.
+
+`evaluateBridgeReserve()` provides the chain-independent reserve invariant used by monitoring and operator UI. A positive delta means bridged supply exceeds expected canonical backing and must be treated as critical. Pending bridge lifecycle amounts can be included explicitly so normal in-flight transfers do not create false alerts.
+
+Signed deployment manifests are represented independently from signing infrastructure. Private signing keys must remain in KMS/HSM or an equivalent operator-controlled signing system; they do not belong in `/token`, environment files, or CI logs.
+
+## Live observation and safety gate
+
+`@jarvis-ai/token` is now a workspace package. Chain-specific RPC code remains outside the token domain; the token package defines `TokenObservationProvider`, `TokenMonitoringService`, reserve reconciliation, and the fail-closed transfer gate.
+
+The Bridge runtime adapter reads Sui Coin metadata/supply and bridge custody state plus the Solana Token-2022 mint supply/authority state through configured RPC providers. Observations are cached briefly to avoid amplifying RPC traffic. When live monitoring is enabled, new quotes are rejected if observations are stale, unavailable, identity-invalid, freeze authority is enabled, or bridged supply is not fully backed.
+
+```dotenv
+JARVIS_TOKEN_LIVE_MONITORING_ENABLED=false
+JARVIS_TOKEN_MONITORING_FAIL_CLOSED=true
+JARVIS_TOKEN_MONITORING_MAX_AGE_MS=60000
+```
+
+The public/operator health surface is `GET /api/v1/token/health` in `apps/bridge`. It never exposes credentials or signing material.
+
+
+## Claim and price safety
+
+Claims are destination-chain redemption operations, not a second transfer. A claim requires a verified cross-chain attestation, exact transfer identity, exact recipient and amount, and replay protection. Sui uses the redeemed-message table for release replay protection; Solana uses a message-hash receipt PDA for inbound redemption. Client and service layers must check claimability before requesting a wallet signature.
+
+Market prices and FX-style rates are informational and never change the exact 1:1 JARVIS bridge amount. Network gas and Solana priority fees are calculated separately. If no fresh configured market-data provider is available, JARVIS returns price unavailable rather than inventing a fallback market price.
+
+
+## Tokenomics and treasury enforcement
+
+The token package now enforces allocation, vesting, treasury, and circulating-supply accounting in integer base units. This release candidate still does not assert a final JARVIS allocation. Future approved allocations must reconcile exactly to 10,000 basis points and the fixed 18,440,000,000,000,000 base-unit supply, with explicit rounding adjustments, governance evidence, custody identities, and independent reviewers. Treasury movements redistribute existing JARVIS only and cannot alter the fixed supply.
+
+
+## Allocation claims and treasury execution
+
+Tokenomics distribution is separate from bridge redemption.
+
+```text
+Approved allocation
+      ↓
+Beneficiary + custody binding
+      ↓
+Vesting calculation
+      ↓
+Claim authorization
+      ↓
+Replay/idempotency checks
+      ↓
+Finalized chain evidence
+      ↓
+Persistent accounting record
+```
+
+Allocation claims are beneficiary-bound and cannot exceed the amount vested at the requested timestamp. Claim IDs and finalized transaction IDs are durable replay keys.
+
+Treasury execution supports policy-defined independent approval thresholds, timelocks, purpose allowlists, per-movement limits, expiry, governance references, and transaction evidence. `config/treasury-policy.example.json` is deliberately a template and must not be interpreted as approved Mainnet governance.
+
+See [Tokenomics enforcement](docs/tokenomics-enforcement.md).
+
+## Token release checklist
+
+```bash
+pnpm token:metadata:generate
+pnpm token:registry:generate
+pnpm token:assets:verify
+pnpm token:schemas:validate
+pnpm token:integrity:verify
+pnpm token:validate
+pnpm token:typecheck
+pnpm token:test
+pnpm token:security:audit
+pnpm token:tokenomics:validate
+```
+
+Or run the aggregate gate:
+
+```bash
+pnpm token:check
+```

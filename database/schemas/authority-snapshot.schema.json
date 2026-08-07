@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/authority-snapshot.schema.json",
+  "title": "JARVIS Authority Snapshot",
+  "type": "object",
+  "required": [
+    "environment",
+    "recordedAt",
+    "canonicalChain",
+    "solana"
+  ],
+  "properties": {
+    "environment": {
+      "enum": [
+        "testnet",
+        "mainnet"
+      ]
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canonicalChain": {
+      "const": "sui"
+    },
+    "solana": {
+      "type": "object",
+      "required": [
+        "mintAuthority",
+        "freezeAuthority",
+        "supplyBaseUnits"
+      ],
+      "properties": {
+        "mintAuthority": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "freezeAuthority": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "supplyBaseUnits": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

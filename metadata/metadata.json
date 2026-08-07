@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "name": "Jarvis AI",
+  "name": "JARVIS",
   "symbol": "JARVIS",
-  "description": "Jarvis AI utility asset. Canonical supply originates on Sui; Solana JARVIS is bridge-backed Token-2022 representation.",
-  "image": "../public/assets/jarvis-green.png",
+  "description": "JARVIS is the fixed-supply utility and accounting asset of the JARVIS platform. Canonical supply originates on Sui; the official Solana representation is bridge-backed through Wormhole NTT.",
+  "image": "../assets/jarvis-green.png",
   "version": "1.0.0-rc.0",
   "decimals": 6,
   "supply": {
@@ -12,20 +12,31 @@
     "baseUnits": "18440000000000000"
   },
   "attributes": [
-    { "trait_type": "Asset", "value": "Jarvis AI" },
-    { "trait_type": "Standard", "value": "Token-2022 / Sui Coin" },
-    { "trait_type": "Supply Model", "value": "Fixed" },
-    { "trait_type": "Decimals", "value": 6 }
+    {
+      "trait_type": "Asset",
+      "value": "JARVIS"
+    },
+    {
+      "trait_type": "Standard",
+      "value": "Token-2022 / Sui Coin"
+    },
+    {
+      "trait_type": "Supply Model",
+      "value": "Fixed"
+    },
+    {
+      "trait_type": "Decimals",
+      "value": 6
+    }
   ],
   "properties": {
     "category": "utility-token",
     "canonicalChain": "sui",
-    "solanaAssetRole": "wrapped",
     "bridgeModel": "lock-mint-burn-release",
     "canonicalImage": "green",
     "files": [
       {
-        "uri": "../public/assets/jarvis-green.png",
+        "uri": "../assets/jarvis-green.png",
         "type": "image/png",
         "theme": "canonical",
         "width": 1500,
@@ -33,7 +44,7 @@
         "sha256": "fffb81b2ed168c409c4f4e0d51a752cc814ca488619e86bc66f6d68767be840f"
       },
       {
-        "uri": "../public/assets/jarvis-logo-dark.png",
+        "uri": "../assets/jarvis-logo-dark.png",
         "type": "image/png",
         "theme": "dark",
         "width": 1500,
@@ -41,18 +52,22 @@
         "sha256": "96378d987e6fc89c44210627ffa665e2dada5faa24fa0c749420b8f274ef6292"
       },
       {
-        "uri": "../public/assets/jarvis-logo-light.png",
+        "uri": "../assets/jarvis-logo-light.png",
         "type": "image/png",
         "theme": "light",
         "width": 1500,
         "height": 1500,
         "sha256": "5d1e6cf32b709ab558f3b3d418d10eaa268ff56810cb984f088253a6740dea78"
       }
-    ]
+    ],
+    "solanaRepresentationType": "bridged",
+    "bridgeProvider": "wormhole",
+    "displayPolicy": "retain JARVIS ticker and show Canonical/Bridged representation badge"
   },
   "deployment": {
     "solanaMint": null,
     "suiCoinType": null,
+    "wormholeProviderId": null,
     "verified": false
   }
 }

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 2,
+  "network": "mainnet-beta",
+  "implementation": "external-token-2022-program",
+  "customJarvisProgramId": null,
+  "token2022ProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+  "associatedTokenProgramId": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+  "systemProgramId": "11111111111111111111111111111111",
+  "legacyTokenProgramPermitted": false,
+  "canonicalMetadata": "token-2022-mint-extension",
+  "assetRole": "bridged",
+  "bridgeProvider": "wormhole-ntt",
+  "genesisSupplyBaseUnits": "0",
+  "mintAuthorityPolicy": "verified-ntt-token-authority",
+  "mint": null,
+  "status": "configuration-ready; deployment not verified",
+  "displaySymbol": "JARVIS",
+  "displayName": "JARVIS",
+  "canonicalChain": "sui",
+  "freezeAuthorityPolicy": "disabled",
+  "claimPolicy": {
+    "mode": "manual-or-wallet-executor",
+    "requiresVerifiedAttestation": true,
+    "replayProtection": "message-hash-receipt-pda",
+    "recipientMustMatch": true,
+    "exactAmount": true,
+    "networkFeesSeparate": true
+  }
+}

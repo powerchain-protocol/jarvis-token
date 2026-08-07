@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/treasury-movement.schema.json",
+  "title": "JARVIS Treasury Movement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "movementId",
+    "purpose",
+    "amountBaseUnits",
+    "from",
+    "to",
+    "governanceRecord",
+    "approvedBy",
+    "approvedAt"
+  ],
+  "properties": {
+    "movementId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "enum": [
+        "allocation",
+        "liquidity",
+        "operations",
+        "incentive",
+        "reserve",
+        "bridge-custody",
+        "other"
+      ]
+    },
+    "amountBaseUnits": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "from": {
+      "type": "string",
+      "minLength": 1
+    },
+    "to": {
+      "type": "string",
+      "minLength": 1
+    },
+    "allocationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "governanceRecord": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approvedBy": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "approvedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "transactionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "executableAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

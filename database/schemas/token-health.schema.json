@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/token-health.schema.json",
+  "title": "JARVIS Token Health",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recordedAt",
+    "state",
+    "checks"
+  ],
+  "properties": {
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "enum": [
+        "healthy",
+        "degraded",
+        "unavailable"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "detail"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "healthy",
+              "degraded",
+              "unavailable"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

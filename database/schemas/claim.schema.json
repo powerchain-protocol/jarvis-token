@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/claim.schema.json",
+  "title": "JARVIS Claim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "transferId",
+    "routeId",
+    "sourceChain",
+    "destinationChain",
+    "amountBaseUnits",
+    "recipient",
+    "status",
+    "attempts",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transferId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "routeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceChain": {
+      "enum": [
+        "sui",
+        "solana"
+      ]
+    },
+    "destinationChain": {
+      "enum": [
+        "sui",
+        "solana"
+      ]
+    },
+    "amountBaseUnits": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "recipient": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attestationDigest": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "destinationTransaction": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "pending-attestation",
+        "ready",
+        "submitting",
+        "submitted",
+        "confirmed",
+        "failed"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "attestationExpiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

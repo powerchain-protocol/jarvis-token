@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "asset": "jarvis",
+  "algorithm": "sha256",
+  "generatedAtPolicy": "deterministic-no-timestamp",
+  "files": [
+    {
+      "path": "config/allocation-policy.json",
+      "bytes": 421,
+      "sha256": "80e2523776dafd77b3cb3ed218c93e285a1836dae17b49d1913308dbb3795da7"
+    },
+    {
+      "path": "config/asset.json",
+      "bytes": 1020,
+      "sha256": "5ac395d1871c80a47454dd37cdca5806e291dff090582204beb568af16339b2f"
+    },
+    {
+      "path": "config/README.md",
+      "bytes": 357,
+      "sha256": "6d9177d786ecbfdcf84675a311bce15292247c5fb1dfc204586c5f12ba961d34"
+    },
+    {
+      "path": "config/tokenomics.policy.json",
+      "bytes": 416,
+      "sha256": "b6d546d99828906bf7616e4c1b00c400ecd6d681600b56fd240850b191366c38"
+    },
+    {
+      "path": "config/treasury-policy.example.json",
+      "bytes": 410,
+      "sha256": "abaf5c4c524e5ea2d1f0e85f7eeab593de0ec44a15cfbad67ef4031fe911736c"
+    },
+    {
+      "path": "contracts/README.md",
+      "bytes": 329,
+      "sha256": "ea58bdda54be14b8ec34653b9a2105c8c660b9e77aef6dfd3bc7d4e63f103d7d"
+    },
+    {
+      "path": "contracts/sui-mainnet/Move.toml",
+      "bytes": 258,
+      "sha256": "dd1ad2291e44e32a59909a22a7aec79082b802920625445c19fcc8be95c5fa6a"
+    },
+    {
+      "path": "contracts/sui-mainnet/sources/jarvis.move",
+      "bytes": 2382,
+      "sha256": "019bf71df02c21b4a76c0082c4dcc288370fdb12c552c11d8d0e2826a6869139"
+    },
+    {
+      "path": "contracts/sui-testnet/Move.toml",
+      "bytes": 266,
+      "sha256": "697bb4cd77415b0bce671d4ce5863d160b96b524eb5fea6633148a52dbd6218f"
+    },
+    {
+      "path": "contracts/sui-testnet/sources/jarvis.move",
+      "bytes": 2382,
+      "sha256": "019bf71df02c21b4a76c0082c4dcc288370fdb12c552c11d8d0e2826a6869139"
+    },
+    {
+      "path": "data/health-policy.json",
+      "bytes": 720,
+      "sha256": "b0c251d7d9927611cf973a307024574d1642c01752006755cec541f6ae9534f5"
+    },
+    {
+      "path": "data/README.md",
+      "bytes": 354,
+      "sha256": "6e1d4cde36bc952836f395d4c3be4c3e01b4a4d30126d36ff083a24e18d8ccea"
+    },
+    {
+      "path": "data/registry.json",
+      "bytes": 1188,
+      "sha256": "4572d36702223984f29b045d81fa5c274973c506ba52ba5343b75d4f4d082d4d"
+    },
+    {
+      "path": "database/schemas/allocation-claim-request.schema.json",
+      "bytes": 767,
+      "sha256": "1f27aa53422c6b997af629d5248ebe88254aba632e305e0dfca07f1830bae0e6"
+    },
+    {
+      "path": "database/schemas/allocation-plan.schema.json",
+      "bytes": 2266,
+      "sha256": "bd78b1b2b66e4ec21285ab09ffbb178ec2f87612904f0108ea8ecf43cf08cf05"
+    },
+    {
+      "path": "database/schemas/authority-snapshot.schema.json",
+      "bytes": 1111,
+      "sha256": "8d5833a847ef0da923d0c69e3d9dc024c5aa1fc5c6b8c60399a09bd4cbcad472"
+    },
+    {
+      "path": "database/schemas/bridge-reserve-snapshot.schema.json",
+      "bytes": 1160,
+      "sha256": "8d429a748be67877571859a79b9b814f2a4ba642654b749ba16d5a28fc11cbec"
+    },
+    {
+      "path": "database/schemas/canonical-asset.schema.json",
+      "bytes": 1072,
+      "sha256": "da80d05f5d96924c1cfe01a4caebb82c2e718908f809e2989b5ffac15e9bcab6"
+    },
+    {
+      "path": "database/schemas/claim.schema.json",
+      "bytes": 1645,
+      "sha256": "773ace727efdabbdac9d1fa7888d5378032ec25ff9e1064d027bd614f3ca5a13"
+    },
+    {
+      "path": "database/schemas/deployment.schema.json",
+      "bytes": 868,
+      "sha256": "9b5f29f58ffe96ea642e1c51dd70c237ab9e3a39e2fa0907db70f11f2e0ea3b1"
+    },
+    {
+      "path": "database/schemas/metadata.schema.json",
+      "bytes": 3015,
+      "sha256": "bb94b4470a7c4fcd4057e70d2741f0c6b7a4de6951db77e737325e8f94ce2d44"
+    },
+    {
+      "path": "database/schemas/onchain-observation.schema.json",
+      "bytes": 1363,
+      "sha256": "703cbbc5188457616da9efa435464afd74a9127a789d462716982affd7de9e6f"
+    },
+    {
+      "path": "database/schemas/rate-quote.schema.json",
+      "bytes": 843,
+      "sha256": "911e82e82204374c8381c28ee1d00d78bdc8b60ea625f212935bac3805912003"
+    },
+    {
+      "path": "database/schemas/README.md",
+      "bytes": 1362,
+      "sha256": "686a134ac2d87be4f3ad34ed7387b7f8879638422a526a2ba84c9a00e16e63db"
+    },
+    {
+      "path": "database/schemas/representation.schema.json",
+      "bytes": 1625,
+      "sha256": "ba2c5dbcd9f8257f24212ae4b09c6c9288a4927588ffa5ce89364abea41da559"
+    },
+    {
+      "path": "database/schemas/reserve-observation.schema.json",
+      "bytes": 1033,
+      "sha256": "f01030572d52aae932447d2f65a0e89e3b645cce26b53477865ca1ca989d9d47"
+    },
+    {
+      "path": "database/schemas/signed-deployment-manifest.schema.json",
+      "bytes": 1532,
+      "sha256": "3dbeaa711964a9a74fba5ebece1a99ee75d1e1f41745682a9e8c8e5a25c8420e"
+    },
+    {
+      "path": "database/schemas/supply-snapshot.schema.json",
+      "bytes": 1052,
+      "sha256": "ffcd08cc40c9aa134d81d5e3e4406c61b2e6948aed2447bb6160be939f44b356"
+    },
+    {
+      "path": "database/schemas/token-event.schema.json",
+      "bytes": 732,
+      "sha256": "93c2f511545aba195284317400a9359182ad3d56b27e6512ae321024d15e40b8"
+    },
+    {
+      "path": "database/schemas/token-health.schema.json",
+      "bytes": 1022,
+      "sha256": "f6fc7b043e342a8733e49e45d60f901b0febc1c7fff2d438aee41b7e68771340"
+    },
+    {
+      "path": "database/schemas/treasury-movement.schema.json",
+      "bytes": 1612,
+      "sha256": "12d12ea56c97542cae896978e2ea43582c1578f5faa54068a165afa22fcf590c"
+    },
+    {
+      "path": "database/schemas/vesting-schedule.schema.json",
+      "bytes": 1426,
+      "sha256": "ad106dd1cbe53993b3d4cf4dfa37f814113d6901b1c65c359d2e77477c82b8a7"
+    },
+    {
+      "path": "metadata/asset-manifest.json",
+      "bytes": 13651,
+      "sha256": "e50cfc7ab4d3551bebbb0fae5fd7ead799d4a0cf5a550ddb3e575b3ed79f8869"
+    },
+    {
+      "path": "metadata/logo-manifest.json",
+      "bytes": 630,
+      "sha256": "c02d0070727a164a95996f1bb29cc2d3dca42f32b3bbfc6c29319bdc1693e43a"
+    },
+    {
+      "path": "metadata/metadata.json",
+      "bytes": 2055,
+      "sha256": "6793918167ac7f018fa43bd38ed74d2dc2d75cd6ffec7f86a7556a44a67141b9"
+    },
+    {
+      "path": "metadata/README.md",
+      "bytes": 1117,
+      "sha256": "18b01dbe9a7b53b0346bc1aa244bb1b30499ef87c327031194c902af7ffe0d0f"
+    },
+    {
+      "path": "metadata/security.json",
+      "bytes": 317,
+      "sha256": "3175a94622e4a367e382186deaf80a2cc89929e1ecede91f0aceaf10dd904967"
+    },
+    {
+      "path": "metadata/solana.json",
+      "bytes": 295,
+      "sha256": "886cb13080b74406112d19a59133368c78ef7eb299b54800fbe73e3b144a7ae2"
+    },
+    {
+      "path": "metadata/sui.json",
+      "bytes": 231,
+      "sha256": "8d743e10685a318d3463b257be8dc0c52b568fe01701b27e71310602ab9c63a1"
+    },
+    {
+      "path": "programs/README.md",
+      "bytes": 278,
+      "sha256": "a2c32014c7f4d647bcc79655dd247183d1d915cd8a2cdda763389aebd9910da2"
+    },
+    {
+      "path": "programs/solana/mainnet-token-2022.json",
+      "bytes": 1033,
+      "sha256": "288474a7d716337a4e8fe36c27da2eba8f30f7792190dba2cdf08605e540fb32"
+    },
+    {
+      "path": "programs/solana/testnet-token-2022.json",
+      "bytes": 1028,
+      "sha256": "43f67d73921b08e312a4a1f48b934963c82e83e8e2ac1d8876843e95b9609f68"
+    }
+  ],
+  "commitmentSha256": "475803f9edd62b53b09bf48f13a7ed7e808d2a04121fb4efa9f21048bd0144ea"
+}

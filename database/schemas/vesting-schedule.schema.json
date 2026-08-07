@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/vesting-schedule.schema.json",
+  "title": "JARVIS Vesting Schedule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "allocationId",
+    "amountBaseUnits",
+    "curve",
+    "startAt",
+    "endAt"
+  ],
+  "properties": {
+    "allocationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "amountBaseUnits": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "curve": {
+      "enum": [
+        "immediate",
+        "linear",
+        "milestone"
+      ]
+    },
+    "startAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cliffAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "unlockAt",
+          "amountBaseUnits"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unlockAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "amountBaseUnits": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          }
+        }
+      }
+    }
+  }
+}

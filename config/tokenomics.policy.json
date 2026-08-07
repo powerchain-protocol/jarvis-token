@@ -1,15 +1,15 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "tokenVersion": "1.0.0-rc.0",
-  "name": "Jarvis AI",
+  "name": "JARVIS",
   "symbol": "JARVIS",
   "decimals": 6,
   "maximumWholeSupply": "18440000000",
   "maximumBaseUnits": "18440000000000000",
   "canonicalChain": "sui",
-  "solanaRole": "wrapped",
   "monetaryModel": "fixed",
   "initialAllocation": "single-configured-treasury",
-  "finalAllocationStatus": "unapproved"
+  "finalAllocationStatus": "unapproved",
+  "solanaRepresentation": "bridged",
+  "bridgeProvider": "wormhole"
 }
-

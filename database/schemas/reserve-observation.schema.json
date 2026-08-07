@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/reserve-observation.json",
+  "title": "JARVIS Bridge Reserve Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assetId", "environment", "lockedCanonicalBaseUnits", "bridgedSupplyBaseUnits", "healthy", "observedAt"],
+  "properties": {
+    "assetId": { "const": "jarvis" },
+    "environment": { "enum": ["testnet", "mainnet"] },
+    "lockedCanonicalBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+    "bridgedSupplyBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+    "pendingInboundBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+    "pendingOutboundBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+    "deltaBaseUnits": { "type": "string", "pattern": "^-?[0-9]+$" },
+    "healthy": { "type": "boolean" },
+    "reasons": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "observedAt": { "type": "string", "format": "date-time" }
+  }
+}

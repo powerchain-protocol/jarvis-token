@@ -1,13 +1,5 @@
-# Solana program profiles
+# Solana representation profiles
 
-JARVIS does not deploy a custom Solana program. It uses the audited, immutable
-Token-2022 program plus the Associated Token Account and System programs.
+`solana/` contains public Token-2022 profiles for the official bridged JARVIS representation on Solana.
 
-The files under `mainnet/jarvis/` and `testnet/jarvis/` are public deployment
-profiles. They are not program binaries, key material, or proof that a mint has
-been deployed.
-
-A custom program should be introduced only if future token behavior cannot be
-implemented with standard Token-2022 instructions. Such a change requires a
-new threat model, audit, program ID, upgrade-authority policy, and tokenomics
-review.
+These files describe token representation policy. The executable bridge-policy Anchor program remains at `programs/solana-jarvis-bridge/`.

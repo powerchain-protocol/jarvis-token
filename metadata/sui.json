@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "asset": "jarvis",
+  "chain": "sui",
+  "representation": "canonical",
+  "standard": "Sui Coin",
+  "decimals": 6,
+  "coinType": null,
+  "packageId": null,
+  "verified": false,
+  "displayTicker": "JARVIS"
+}
