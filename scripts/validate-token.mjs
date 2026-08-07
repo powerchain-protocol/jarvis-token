@@ -74,7 +74,7 @@ for (const size of logoManifest.generatedSizes ?? []) {
   }
 }
 
-const textRoots = ["token", "packages/token-core", "bridge/wormhole", "tests"];
+const textRoots = ["token", "packages/token-core", "integration/bridge/wormhole", "tests"];
 const forbidden = ["Wrapped JARVIS", "wrapped-sui-jarvis", "sui-jarvis-to-solana-wrapped-jarvis", 'solanaRole: "wrapped"'];
 for (const rootName of textRoots) {
   const root = path.join(repoRoot, rootName); if (!fs.existsSync(root)) continue;

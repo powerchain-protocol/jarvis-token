@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "asset": "jarvis",
   "chain": "sui",
   "representation": "canonical",
@@ -8,5 +8,11 @@
   "coinType": null,
   "packageId": null,
   "verified": false,
-  "displayTicker": "JARVIS"
+  "displayTicker": "JARVIS",
+  "sourceProfile": "token/contracts/sui-mainnet",
+  "metadataObjectId": null,
+  "fixedSupplyObjectId": null,
+  "publishedTransactionDigest": null,
+  "treasuryCapConsumed": true,
+  "maximumSupplyBaseUnits": "18440000000000000"
 }

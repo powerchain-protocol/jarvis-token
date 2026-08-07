@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/deployment-profile.schema.json",
+  "title": "JARVIS token deployment profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "environment",
+    "asset",
+    "canonicalChain",
+    "sourceProfile",
+    "sui",
+    "solana",
+    "bridge",
+    "releaseGate"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "environment": {
+      "enum": [
+        "testnet",
+        "mainnet"
+      ]
+    },
+    "asset": {
+      "const": "jarvis"
+    },
+    "canonicalChain": {
+      "const": "sui"
+    },
+    "sourceProfile": {
+      "enum": [
+        "token/contracts/sui-testnet",
+        "token/contracts/sui-mainnet"
+      ]
+    },
+    "sui": {
+      "type": "object",
+      "required": [
+        "packageId",
+        "coinType",
+        "metadataObjectId",
+        "fixedSupplyObjectId",
+        "publishedTransactionDigest",
+        "verified"
+      ]
+    },
+    "solana": {
+      "type": "object",
+      "required": [
+        "representation",
+        "provider",
+        "standard",
+        "mint",
+        "nttManagerProgramId",
+        "mintAuthority",
+        "freezeAuthority",
+        "genesisSupplyBaseUnits",
+        "verified"
+      ]
+    },
+    "bridge": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "provider",
+        "protocol",
+        "exactOneToOne"
+      ]
+    },
+    "releaseGate": {
+      "type": "object",
+      "required": [
+        "canonicalTokenVerified",
+        "bridgeRepresentationVerified",
+        "reserveMonitorEnabled",
+        "emergencyPauseConfigured"
+      ]
+    }
+  }
+}

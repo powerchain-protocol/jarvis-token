@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "asset": "jarvis",
   "chain": "solana",
   "representation": "bridged",
@@ -10,5 +10,9 @@
   "genesisSupplyBaseUnits": "0",
   "freezeAuthority": null,
   "verified": false,
-  "displayTicker": "JARVIS"
+  "displayTicker": "JARVIS",
+  "tokenProgram": "Token-2022",
+  "nttManagerProgramId": null,
+  "mintAuthority": null,
+  "exactOneToOne": true
 }

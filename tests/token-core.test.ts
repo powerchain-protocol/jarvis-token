@@ -32,9 +32,35 @@ test("canonical asset stays Sui canonical and Solana bridged", () => {
   assert.equal(asset.representations[1]?.type, "bridged");
 });
 
-test("deployment readiness requires both representations, provider and verification", () => {
+test("deployment readiness requires canonical and bridged deployment evidence", () => {
   assert.equal(deploymentReadiness({ environment: "testnet", verified: false }).ready, false);
-  assert.equal(deploymentReadiness({ environment: "testnet", suiCoinType: sui, solanaMint: solana, wormholeProviderId: "wormhole-ntt", verified: true }).ready, true);
+  assert.equal(deploymentReadiness({
+    environment: "testnet",
+    bridgeEnabled: true,
+    verified: true,
+    wormholeProviderId: "wormhole-ntt",
+    sui: {
+      packageId: `0x${"2".repeat(64)}`,
+      coinType: sui,
+      metadataObjectId: `0x${"3".repeat(64)}`,
+      fixedSupplyObjectId: `0x${"4".repeat(64)}`,
+      publishedTransactionDigest: "publish-digest",
+      observedSupplyBaseUnits: JARVIS_TOKEN.maximumBaseUnits,
+      treasuryCapExists: false,
+      sourceProfile: "token/contracts/sui-testnet",
+      verified: true,
+    },
+    solana: {
+      mint: solana,
+      tokenProgram: "Token-2022",
+      nttManagerProgramId: "11111111111111111111111111111111",
+      mintAuthority: "11111111111111111111111111111111",
+      freezeAuthority: null,
+      observedSupplyBaseUnits: 0n,
+      genesisSupplyVerifiedZero: true,
+      verified: true,
+    },
+  }).ready, true);
 });
 
 test("health cannot report healthy for an unconfigured token", () => {

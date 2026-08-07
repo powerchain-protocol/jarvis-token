@@ -64,14 +64,26 @@ public fun decimals(): u8 {
     DECIMALS
 }
 
+/// Returns the maximum supply in whole JARVIS units.
+public fun maximum_whole_supply(): u64 {
+    MAXIMUM_WHOLE_SUPPLY
+}
+
 /// Returns the maximum supply in base units.
 public fun maximum_base_units(): u64 {
     MAXIMUM_BASE_UNITS
+}
+
+/// Verifies that the frozen proof still records the canonical fixed supply.
+public fun is_canonical_fixed_supply(fixed_supply: &FixedSupply<JARVIS>): bool {
+    total_supply(fixed_supply) == MAXIMUM_BASE_UNITS
 }
 
 #[test]
 fun tokenomics_constants_are_consistent() {
     assert!(MAXIMUM_WHOLE_SUPPLY * 1_000_000 == MAXIMUM_BASE_UNITS);
     assert!(DECIMALS == 6);
+    assert!(maximum_whole_supply() == MAXIMUM_WHOLE_SUPPLY);
+    assert!(maximum_base_units() == MAXIMUM_BASE_UNITS);
 }
 

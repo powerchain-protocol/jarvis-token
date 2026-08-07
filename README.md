@@ -152,7 +152,7 @@ Operational and recovery documentation remains platform-level:
 pnpm setup:sui
 pnpm doctor:sui
 pnpm build:sui
-ppnpm test:sui
+pnpm test:sui
 ```
 
 After `sui client` generates an address, fund only the **public Testnet address** through `https://faucet.sui.io`. Never place a recovery phrase, private key, or `sui.keystore` contents in Git, `.env`, CI, logs, or documentation.
@@ -163,7 +163,7 @@ After `sui client` generates an address, fund only the **public Testnet address*
 pnpm validate:token-layout
 pnpm validate:asset-platform
 pnpm validate:bridge-routing
-ppnpm test:core
+pnpm test:core
 ```
 
 The layout validator prevents token-specific files from drifting back to the repository root or deprecated paths.
@@ -352,3 +352,27 @@ Or run the aggregate gate:
 ```bash
 pnpm token:check
 ```
+
+## Canonical issuance and bridge representation
+
+JARVIS issuance is owned by the token domain, not the bridge domain. The canonical Move source is mirrored in `token/contracts/sui-mainnet/` and `token/contracts/sui-testnet/`; only their framework/network profiles differ. Publishing mints the complete fixed supply, consumes the Sui `TreasuryCap`, freezes the metadata and fixed-supply proof, and transfers the complete supply to the publisher for subsequent treasury/allocation operations.
+
+The Solana Token-2022 mint is an official **bridged representation** with zero genesis supply. Its mint authority is expected to be the approved Wormhole NTT bridge authority and its freeze authority must be disabled. Cross-chain accounting remains exact 1:1.
+
+Deployment evidence is deliberately split:
+
+- `canonicalSuiDeploymentReadiness()` verifies canonical issuance evidence independently;
+- `bridgedSolanaDeploymentReadiness()` verifies the Solana/Wormhole representation;
+- `deploymentReadiness()` verifies the complete cross-chain deployment;
+- `tokenRuntimeReadiness()` requires only canonical issuance when the bridge is disabled.
+
+Deployment templates live in `token/config/deployments/` and are intentionally unverified/disabled until real on-chain identities have been independently checked.
+
+## Upgraded token verification
+
+```bash
+pnpm token:upgrade:validate
+pnpm token:check
+```
+
+The upgrade validator protects the corrected reverse-route reserve equation, canonical Sui/bridged Solana role split, mirrored Sui source profiles, fixed supply constants, TreasuryCap consumption, and fail-closed deployment templates.

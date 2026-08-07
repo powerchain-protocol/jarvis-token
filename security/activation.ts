@@ -3,8 +3,9 @@ import type { JarvisEnvironment } from "../common/types.ts";
 import { deploymentReadiness, type TokenDeploymentDescriptor } from "../functions/deployment.ts";
 import { assertTokenDeploymentSecurity, type TokenDeploymentSecurityInput } from "./policy.ts";
 
-export interface TokenActivationInput extends TokenDeploymentDescriptor, TokenDeploymentSecurityInput {
+export interface TokenActivationInput extends Omit<TokenDeploymentDescriptor, "bridgeEnabled">, TokenDeploymentSecurityInput {
   environment: JarvisEnvironment;
+  bridgeEnabled: boolean;
   wormholeRouteVerified: boolean;
   reserveMonitorEnabled: boolean;
   emergencyPauseConfigured: boolean;

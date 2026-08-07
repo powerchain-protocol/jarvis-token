@@ -13,3 +13,7 @@ This directory contains canonical public metadata and deterministic integrity ev
 Do not mark a deployment `verified` until its public identities have been independently checked against the target network and the bridge authority policy.
 
 On-chain observations are runtime evidence and are not mixed into static token metadata. They belong in the observation storage models and are timestamped independently so historical verification remains auditable.
+
+## Deployment profiles
+
+Static public metadata is not deployment proof. Environment-specific evidence lives in `token/config/deployments/{testnet,mainnet}.json`. Canonical Sui evidence includes package, coin type, metadata object, fixed-supply proof object, publish transaction, observed supply, and TreasuryCap-consumption verification. Solana evidence includes the Token-2022 mint, Wormhole NTT manager/authority, zero-genesis-supply verification, and disabled freeze authority.

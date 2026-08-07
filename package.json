@@ -13,11 +13,16 @@
     "./services": "./services/index.ts",
     "./storage": "./storage/index.ts",
     "./ui": "./ui/index.ts",
-    "./validation": "./validation/index.ts"
+    "./validation": "./validation/index.ts",
+    "./deployment": "./functions/deployment.ts",
+    "./supply": "./functions/supply.ts",
+    "./representations": "./functions/representations.ts",
+    "./monetary-policy": "./constants/monetary.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "check": "pnpm typecheck && pnpm test"
+    "check": "pnpm typecheck && pnpm test && pnpm validate:upgrade",
+    "validate:upgrade": "node scripts/validate-token-upgrade.mjs"
   }
 }
