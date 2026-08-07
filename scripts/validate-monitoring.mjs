@@ -1,22 +1,25 @@
 import { readFileSync, existsSync } from "node:fs";
+import path from "node:path";
 
+const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const required = [
-  "token/services/ports.ts",
-  "token/services/monitoring.ts",
-  "token/security/runtime-gate.ts",
-  "token/database/schemas/onchain-observation.schema.json",
-  "token/database/schemas/reserve-observation.schema.json",
-  "apps/bridge/lib/token-monitoring/rpc-observer.ts",
-  "apps/bridge/lib/token-monitoring/runtime.ts",
-  "apps/bridge/app/api/v1/token/health/route.ts",
+  "services/ports.ts",
+  "services/monitoring.ts",
+  "security/runtime-gate.ts",
+  "database/schemas/onchain-observation.schema.json",
+  "database/schemas/reserve-observation.schema.json",
 ];
-for (const file of required) if (!existsSync(file)) throw new Error(`Missing ${file}`);
-const schema = readFileSync("prisma/schema.prisma", "utf8");
-for (const model of ["TokenOnChainObservationRecord", "BridgeReserveObservationRecord"]) {
-  if (!schema.includes(`model ${model}`)) throw new Error(`Missing Prisma model ${model}`);
+for (const file of required) if (!existsSync(path.join(root, file))) throw new Error(`Missing ${file}`);
+
+// The runtime gate must fail closed: transfers are blocked when monitoring is
+// unavailable, paused, or unhealthy, and only allowed with zero reasons.
+const gate = readFileSync(path.join(root, "security/runtime-gate.ts"), "utf8");
+for (const needle of ['"monitoring-unavailable"', "allowed: reasons.length === 0"]) {
+  if (!gate.includes(needle)) throw new Error(`Runtime gate invariant missing: ${needle}`);
 }
-const env = readFileSync(".env.example", "utf8");
-for (const name of ["JARVIS_TOKEN_LIVE_MONITORING_ENABLED", "JARVIS_TOKEN_MONITORING_FAIL_CLOSED", "JARVIS_TOKEN_MONITORING_MAX_AGE_MS"]) {
-  if (!env.includes(`${name}=`)) throw new Error(`Missing ${name} from .env.example`);
-}
+
+// Platform RPC observers, health routes, Prisma models, and .env.example
+// settings live at the platform root and are validated outside this token
+// repository.
+
 console.log("JARVIS live token monitoring validated");
