@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const mainnetToml = fs.readFileSync(path.join(root, "contracts/sui-mainnet/Move.toml"), "utf8");
 const testnetToml = fs.readFileSync(path.join(root, "contracts/sui-testnet/Move.toml"), "utf8");
