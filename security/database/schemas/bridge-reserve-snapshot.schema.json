@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/bridge-reserve-snapshot.schema.json",
+  "title": "JARVIS Bridge Reserve Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "recordedAt",
+    "canonicalLockedBaseUnits",
+    "bridgedSolanaBaseUnits",
+    "pendingSuiToSolanaBaseUnits",
+    "pendingSolanaToSuiBaseUnits",
+    "state"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canonicalLockedBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "bridgedSolanaBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "pendingSuiToSolanaBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "pendingSolanaToSuiBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "state": {
+      "enum": [
+        "balanced",
+        "pending",
+        "invalid"
+      ]
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

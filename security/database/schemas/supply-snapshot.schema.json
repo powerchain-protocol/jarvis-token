@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/supply-snapshot.schema.json",
+  "title": "JARVIS Supply Snapshot",
+  "type": "object",
+  "required": [
+    "asset",
+    "recordedAt",
+    "canonicalCirculatingBaseUnits",
+    "canonicalLockedBaseUnits",
+    "bridgedSolanaBaseUnits"
+  ],
+  "properties": {
+    "asset": {
+      "const": "jarvis"
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canonicalCirculatingBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "canonicalLockedBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "bridgedSolanaBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "pendingSuiToSolanaBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "pendingSolanaToSuiBaseUnits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "invariantValid": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

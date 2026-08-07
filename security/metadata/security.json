@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "asset": "jarvis",
+  "canonicalMintingAfterGenesis": false,
+  "solanaIndependentMinting": false,
+  "solanaFreezeAuthorityAllowed": false,
+  "requiresWormholeRouteVerification": true,
+  "requiresReserveMonitoring": true,
+  "requiresEmergencyPause": true,
+  "bridgeActivationDefault": false
+}

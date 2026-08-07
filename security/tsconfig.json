@@ -1,0 +1,28 @@
+{
+  "extends": "../config/typescript/base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": ".",
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": [
+    "index.ts",
+    "common/**/*.ts",
+    "constants/**/*.ts",
+    "context/**/*.ts",
+    "functions/**/*.ts",
+    "security/**/*.ts",
+    "storage/**/*.ts",
+    "ui/**/*.ts",
+    "utils/**/*.ts",
+    "validation/**/*.ts",
+    "services/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "target",
+    "dist"
+  ]
+}

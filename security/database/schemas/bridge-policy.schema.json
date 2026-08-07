@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/bridge-policy.schema.json",
+  "title": "JARVIS cross-chain bridge policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "protocol",
+    "canonicalChain",
+    "bridgedChain",
+    "chainDomains",
+    "maximumBaseUnits",
+    "maxTransferBaseUnits",
+    "exactOneToOne",
+    "pausedByDefault",
+    "sourceDomainValidation",
+    "replayProtection"
+  ],
+  "properties": {
+    "provider": { "const": "wormhole" },
+    "protocol": { "const": "ntt" },
+    "canonicalChain": { "const": "sui" },
+    "bridgedChain": { "const": "solana" },
+    "chainDomains": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["solana", "sui"],
+      "properties": {
+        "solana": { "const": 1 },
+        "sui": { "const": 21 }
+      }
+    },
+    "maximumBaseUnits": { "const": "18440000000000000" },
+    "maxTransferBaseUnits": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "exactOneToOne": { "const": true },
+    "pausedByDefault": { "const": true },
+    "sourceDomainValidation": { "const": true },
+    "replayProtection": { "const": true }
+  }
+}

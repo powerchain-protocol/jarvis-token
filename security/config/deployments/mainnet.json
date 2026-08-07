@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "environment": "mainnet",
+  "asset": "jarvis",
+  "canonicalChain": "sui",
+  "sourceProfile": "token/contracts/sui-mainnet",
+  "sui": {
+    "packageId": null,
+    "coinType": null,
+    "metadataObjectId": null,
+    "fixedSupplyObjectId": null,
+    "publishedTransactionDigest": null,
+    "verified": false,
+    "genesisReceiptObjectId": null
+  },
+  "solana": {
+    "representation": "bridged",
+    "provider": "wormhole",
+    "standard": "Token-2022",
+    "mint": null,
+    "nttManagerProgramId": null,
+    "mintAuthority": null,
+    "freezeAuthority": null,
+    "genesisSupplyBaseUnits": "0",
+    "verified": false,
+    "bridgeProgramId": "7FLDAMVxiiR6MUvF4dqMxfxDE7TaE4LJRLgypY4EHBgR",
+    "suiChainId": 21,
+    "maxTransferBaseUnits": "184400000000000"
+  },
+  "bridge": {
+    "enabled": false,
+    "provider": "wormhole",
+    "protocol": "ntt",
+    "exactOneToOne": true,
+    "chainDomains": {
+      "solana": 1,
+      "sui": 21
+    },
+    "maxTransferBaseUnits": "184400000000000"
+  },
+  "releaseGate": {
+    "canonicalTokenVerified": false,
+    "bridgeRepresentationVerified": false,
+    "reserveMonitorEnabled": false,
+    "emergencyPauseConfigured": false
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "status": "template",
+  "minimumApprovals": 2,
+  "timelockSeconds": 0,
+  "maxMovementBaseUnits": null,
+  "allowedPurposes": [
+    "allocation",
+    "liquidity",
+    "operations",
+    "incentive",
+    "reserve",
+    "bridge-custody",
+    "other"
+  ],
+  "note": "Production governance must approve explicit thresholds, timelock and movement limits before mainnet treasury execution."
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/representation.schema.json",
+  "title": "JARVIS Chain Representation",
+  "type": "object",
+  "required": [
+    "asset",
+    "chain",
+    "type",
+    "standard",
+    "verified"
+  ],
+  "properties": {
+    "asset": {
+      "const": "jarvis"
+    },
+    "chain": {
+      "enum": [
+        "sui",
+        "solana"
+      ]
+    },
+    "type": {
+      "enum": [
+        "canonical",
+        "bridged"
+      ]
+    },
+    "standard": {
+      "enum": [
+        "Sui Coin",
+        "Token-2022"
+      ]
+    },
+    "provider": {
+      "enum": [
+        "wormhole"
+      ]
+    },
+    "address": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verified": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "chain": {
+            "const": "sui"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {
+            "const": "canonical"
+          },
+          "standard": {
+            "const": "Sui Coin"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "chain": {
+            "const": "solana"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "provider"
+        ],
+        "properties": {
+          "type": {
+            "const": "bridged"
+          },
+          "standard": {
+            "const": "Token-2022"
+          },
+          "provider": {
+            "const": "wormhole"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

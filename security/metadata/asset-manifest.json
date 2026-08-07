@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 2,
+  "asset": "jarvis",
+  "generatedAtPolicy": "deterministic-no-timestamp",
+  "sourceOfTruth": "token/assets",
+  "files": [
+    {
+      "name": "jarvis-green.png",
+      "uri": "../assets/jarvis-green.png",
+      "mimeType": "image/png",
+      "width": 1500,
+      "height": 1500,
+      "sha256": "fffb81b2ed168c409c4f4e0d51a752cc814ca488619e86bc66f6d68767be840f"
+    },
+    {
+      "name": "jarvis-logo-dark.png",
+      "uri": "../assets/jarvis-logo-dark.png",
+      "mimeType": "image/png",
+      "width": 1500,
+      "height": 1500,
+      "sha256": "96378d987e6fc89c44210627ffa665e2dada5faa24fa0c749420b8f274ef6292"
+    },
+    {
+      "name": "jarvis-logo-light.png",
+      "uri": "../assets/jarvis-logo-light.png",
+      "mimeType": "image/png",
+      "width": 1500,
+      "height": 1500,
+      "sha256": "5d1e6cf32b709ab558f3b3d418d10eaa268ff56810cb984f088253a6740dea78"
+    }
+  ],
+  "generated": [
+    {
+      "name": "jarvis-canonical-16.png",
+      "uri": "../assets/generated/jarvis-canonical-16.png",
+      "mimeType": "image/png",
+      "width": 16,
+      "height": 16,
+      "sha256": "eafcc77f3b1df679e6acbdd51e8d6ffaaa10eaddadb3e8a51a05080e6c4cd8b7"
+    },
+    {
+      "name": "jarvis-canonical-16.webp",
+      "uri": "../assets/generated/jarvis-canonical-16.webp",
+      "mimeType": "image/webp",
+      "width": 16,
+      "height": 16,
+      "sha256": "03fa3b255f11d5703d9f621617f4a88c3e7d26e302e250ec09f47ab0820c8b60"
+    },
+    {
+      "name": "jarvis-dark-16.png",
+      "uri": "../assets/generated/jarvis-dark-16.png",
+      "mimeType": "image/png",
+      "width": 16,
+      "height": 16,
+      "sha256": "f783b69ebebbab3f8f65242beed4f69f098fb2d0cfe7010f3a009b11537b534b"
+    },
+    {
+      "name": "jarvis-dark-16.webp",
+      "uri": "../assets/generated/jarvis-dark-16.webp",
+      "mimeType": "image/webp",
+      "width": 16,
+      "height": 16,
+      "sha256": "adc61c3964537db0617e40e94052f203639c8d7b9769992017f4ce41f5eddee4"
+    },
+    {
+      "name": "jarvis-light-16.png",
+      "uri": "../assets/generated/jarvis-light-16.png",
+      "mimeType": "image/png",
+      "width": 16,
+      "height": 16,
+      "sha256": "c5e3d29426581afa243f6f3970165aa4b5c43045cd17e5d87ab2c01cccb55e82"
+    },
+    {
+      "name": "jarvis-light-16.webp",
+      "uri": "../assets/generated/jarvis-light-16.webp",
+      "mimeType": "image/webp",
+      "width": 16,
+      "height": 16,
+      "sha256": "41ffd9adafbb17f30c2b5ba4fb312dc43143f559426f35a2e71ab1ec4e123620"
+    },
+    {
+      "name": "jarvis-canonical-32.png",
+      "uri": "../assets/generated/jarvis-canonical-32.png",
+      "mimeType": "image/png",
+      "width": 32,
+      "height": 32,
+      "sha256": "e8170672f6f4118fb1c549869dcd7048c1578e4716693cb036e665a6251345df"
+    },
+    {
+      "name": "jarvis-canonical-32.webp",
+      "uri": "../assets/generated/jarvis-canonical-32.webp",
+      "mimeType": "image/webp",
+      "width": 32,
+      "height": 32,
+      "sha256": "c529adfba6367bda46951540c5bade87e133d9f96bc72df8d90ec995fa44161f"
+    },
+    {
+      "name": "jarvis-dark-32.png",
+      "uri": "../assets/generated/jarvis-dark-32.png",
+      "mimeType": "image/png",
+      "width": 32,
+      "height": 32,
+      "sha256": "9c662bb786e36976307c908802e8e3dcf356198915b589efb15a1837dad25bdf"
+    },
+    {
+      "name": "jarvis-dark-32.webp",
+      "uri": "../assets/generated/jarvis-dark-32.webp",
+      "mimeType": "image/webp",
+      "width": 32,
+      "height": 32,
+      "sha256": "7666054922b8e5167bc898cbccbd3aa94dbd325fc4155523c0c2dd689723d370"
+    },
+    {
+      "name": "jarvis-light-32.png",
+      "uri": "../assets/generated/jarvis-light-32.png",
+      "mimeType": "image/png",
+      "width": 32,
+      "height": 32,
+      "sha256": "ecb4c6e57ad89e94bd4e5d1784c71698b06618b051cf0ca4ec77744e70bfc885"
+    },
+    {
+      "name": "jarvis-light-32.webp",
+      "uri": "../assets/generated/jarvis-light-32.webp",
+      "mimeType": "image/webp",
+      "width": 32,
+      "height": 32,
+      "sha256": "47b9efc251818ab388047f4aa92f5b66ff579295e78eab4a6c0179c7110c2e4d"
+    },
+    {
+      "name": "jarvis-canonical-64.png",
+      "uri": "../assets/generated/jarvis-canonical-64.png",
+      "mimeType": "image/png",
+      "width": 64,
+      "height": 64,
+      "sha256": "1186e1948c8da81930a4f38898b33f32f57ca81d53816969dba9023f26c7f85d"
+    },
+    {
+      "name": "jarvis-canonical-64.webp",
+      "uri": "../assets/generated/jarvis-canonical-64.webp",
+      "mimeType": "image/webp",
+      "width": 64,
+      "height": 64,
+      "sha256": "f51d640431f963ee2942c131ccd60023fa1661f8030a93e8f92af0c008c01d3b"
+    },
+    {
+      "name": "jarvis-dark-64.png",
+      "uri": "../assets/generated/jarvis-dark-64.png",
+      "mimeType": "image/png",
+      "width": 64,
+      "height": 64,
+      "sha256": "d256ce4f0fcb4288733737d2c97adcbaf3a76bc7731f42b7451e4a6460f2bba0"
+    },
+    {
+      "name": "jarvis-dark-64.webp",
+      "uri": "../assets/generated/jarvis-dark-64.webp",
+      "mimeType": "image/webp",
+      "width": 64,
+      "height": 64,
+      "sha256": "3109a5e972619b91d0054fb578e85069f0fdc085f5a04874286e7cf583610aae"
+    },
+    {
+      "name": "jarvis-light-64.png",
+      "uri": "../assets/generated/jarvis-light-64.png",
+      "mimeType": "image/png",
+      "width": 64,
+      "height": 64,
+      "sha256": "9cec0c9f5f399416bf5753686a598194a492f02e585a51c94991b51d7d617448"
+    },
+    {
+      "name": "jarvis-light-64.webp",
+      "uri": "../assets/generated/jarvis-light-64.webp",
+      "mimeType": "image/webp",
+      "width": 64,
+      "height": 64,
+      "sha256": "27bf09e48ae857b20d69a028b305d9220725b5ed86abdcb5a5881f71feafa48f"
+    },
+    {
+      "name": "jarvis-canonical-128.png",
+      "uri": "../assets/generated/jarvis-canonical-128.png",
+      "mimeType": "image/png",
+      "width": 128,
+      "height": 128,
+      "sha256": "b1b8b3dd30d3ef14d86425896d731af7e7d2b998b4a1f3ce762b2297e9dc4ccd"
+    },
+    {
+      "name": "jarvis-canonical-128.webp",
+      "uri": "../assets/generated/jarvis-canonical-128.webp",
+      "mimeType": "image/webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "dc59bcb3749294c3ce56a7cd009ef838c32350bff06fd00f11a5d0a2f4a5878d"
+    },
+    {
+      "name": "jarvis-dark-128.png",
+      "uri": "../assets/generated/jarvis-dark-128.png",
+      "mimeType": "image/png",
+      "width": 128,
+      "height": 128,
+      "sha256": "33d975c2f4a3b3c47afa00d6f5d36c40f60d3af3d1c851c2993adc06022c4309"
+    },
+    {
+      "name": "jarvis-dark-128.webp",
+      "uri": "../assets/generated/jarvis-dark-128.webp",
+      "mimeType": "image/webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "534ffb2d4b412f8df75172bc785db095a515a21198995fd0bda084e15bd8f87d"
+    },
+    {
+      "name": "jarvis-light-128.png",
+      "uri": "../assets/generated/jarvis-light-128.png",
+      "mimeType": "image/png",
+      "width": 128,
+      "height": 128,
+      "sha256": "7fcec1b9ca6ba234a124b6f92a3408a2c06c820d4be888300df112dc58b546c0"
+    },
+    {
+      "name": "jarvis-light-128.webp",
+      "uri": "../assets/generated/jarvis-light-128.webp",
+      "mimeType": "image/webp",
+      "width": 128,
+      "height": 128,
+      "sha256": "a18ce06e68f3f5312f679566b8053329b0d7716905f1b5bec6849089cadf87c6"
+    },
+    {
+      "name": "jarvis-canonical-180.png",
+      "uri": "../assets/generated/jarvis-canonical-180.png",
+      "mimeType": "image/png",
+      "width": 180,
+      "height": 180,
+      "sha256": "c1d2812dea723ec3b1368da37d3d2c74952c0c53cb27207bf7c35c7aedabcc52"
+    },
+    {
+      "name": "jarvis-canonical-180.webp",
+      "uri": "../assets/generated/jarvis-canonical-180.webp",
+      "mimeType": "image/webp",
+      "width": 180,
+      "height": 180,
+      "sha256": "5803a55f9d0fa1de141b8307ede03c26a775a251705322c8d3735a984f985b0a"
+    },
+    {
+      "name": "jarvis-dark-180.png",
+      "uri": "../assets/generated/jarvis-dark-180.png",
+      "mimeType": "image/png",
+      "width": 180,
+      "height": 180,
+      "sha256": "471750005ed23af1f9f903c5b70751707a6cfeef9706f87457484cc0791867d1"
+    },
+    {
+      "name": "jarvis-dark-180.webp",
+      "uri": "../assets/generated/jarvis-dark-180.webp",
+      "mimeType": "image/webp",
+      "width": 180,
+      "height": 180,
+      "sha256": "8e24ec67af6221e3b5fb481dfc9b1576f643c1794cc1713c73a88cb3f25100d5"
+    },
+    {
+      "name": "jarvis-light-180.png",
+      "uri": "../assets/generated/jarvis-light-180.png",
+      "mimeType": "image/png",
+      "width": 180,
+      "height": 180,
+      "sha256": "d23b1613996b102a6c601427858dc466b40279ec4c80832ff180472e92d6e8d8"
+    },
+    {
+      "name": "jarvis-light-180.webp",
+      "uri": "../assets/generated/jarvis-light-180.webp",
+      "mimeType": "image/webp",
+      "width": 180,
+      "height": 180,
+      "sha256": "fecb264f44caa02c3601010cf6c4020ac49d00925b12bedbd70934d9506ee95f"
+    },
+    {
+      "name": "jarvis-canonical-192.png",
+      "uri": "../assets/generated/jarvis-canonical-192.png",
+      "mimeType": "image/png",
+      "width": 192,
+      "height": 192,
+      "sha256": "bc2b9a9ec015bafe49c465dd6465014719418cab30c38ae6b87c494d78502718"
+    },
+    {
+      "name": "jarvis-canonical-192.webp",
+      "uri": "../assets/generated/jarvis-canonical-192.webp",
+      "mimeType": "image/webp",
+      "width": 192,
+      "height": 192,
+      "sha256": "a0e0663fbe523664a074116c8a60f0032f4eccc1958b0f951c345a8c5216f7b8"
+    },
+    {
+      "name": "jarvis-dark-192.png",
+      "uri": "../assets/generated/jarvis-dark-192.png",
+      "mimeType": "image/png",
+      "width": 192,
+      "height": 192,
+      "sha256": "2301c4d43cbf38fe4f16f7dd802eec1764365c8e4831a9b96c4760b02e9fb6c6"
+    },
+    {
+      "name": "jarvis-dark-192.webp",
+      "uri": "../assets/generated/jarvis-dark-192.webp",
+      "mimeType": "image/webp",
+      "width": 192,
+      "height": 192,
+      "sha256": "39cf5eba57f2df15d1b2df38586aa683a43aa9c5863e1331653f0651e9f8fe1e"
+    },
+    {
+      "name": "jarvis-light-192.png",
+      "uri": "../assets/generated/jarvis-light-192.png",
+      "mimeType": "image/png",
+      "width": 192,
+      "height": 192,
+      "sha256": "ffd0e326f50a2443691e0b7448958abdd5c00b5bb8c029b57d3b4db291239b84"
+    },
+    {
+      "name": "jarvis-light-192.webp",
+      "uri": "../assets/generated/jarvis-light-192.webp",
+      "mimeType": "image/webp",
+      "width": 192,
+      "height": 192,
+      "sha256": "2e858bffa563cd732098037d4082e9eda3f1c504f90aeb8440826290b61f440d"
+    },
+    {
+      "name": "jarvis-canonical-256.png",
+      "uri": "../assets/generated/jarvis-canonical-256.png",
+      "mimeType": "image/png",
+      "width": 256,
+      "height": 256,
+      "sha256": "a3dc2e1f73292590c078b3eb7011008a19c34017b97093ae16fa99884b649f93"
+    },
+    {
+      "name": "jarvis-canonical-256.webp",
+      "uri": "../assets/generated/jarvis-canonical-256.webp",
+      "mimeType": "image/webp",
+      "width": 256,
+      "height": 256,
+      "sha256": "603ec22cd3c44db8b873ef16082bfa71bcd4fdcd7222b368c488ff9dee8ed35c"
+    },
+    {
+      "name": "jarvis-dark-256.png",
+      "uri": "../assets/generated/jarvis-dark-256.png",
+      "mimeType": "image/png",
+      "width": 256,
+      "height": 256,
+      "sha256": "3ab7e60d317cdca51c85ef3aac418729862aa5243ba5cefee9fdbb4c3b61cdeb"
+    },
+    {
+      "name": "jarvis-dark-256.webp",
+      "uri": "../assets/generated/jarvis-dark-256.webp",
+      "mimeType": "image/webp",
+      "width": 256,
+      "height": 256,
+      "sha256": "3f167caff4c6bc6cd98d859ee88b1011e9e09e5c548db74b2bc7ad13206d498f"
+    },
+    {
+      "name": "jarvis-light-256.png",
+      "uri": "../assets/generated/jarvis-light-256.png",
+      "mimeType": "image/png",
+      "width": 256,
+      "height": 256,
+      "sha256": "cd19daf7cec32cfd9731bc9514a6a5b9bd8e745113a3d1a8543651ed8876cf8e"
+    },
+    {
+      "name": "jarvis-light-256.webp",
+      "uri": "../assets/generated/jarvis-light-256.webp",
+      "mimeType": "image/webp",
+      "width": 256,
+      "height": 256,
+      "sha256": "e8cc5665678971f730c6f2133adedc6cccd3b424bc88112f99d4687497ae3455"
+    },
+    {
+      "name": "jarvis-canonical-512.png",
+      "uri": "../assets/generated/jarvis-canonical-512.png",
+      "mimeType": "image/png",
+      "width": 512,
+      "height": 512,
+      "sha256": "2d62556379c0ea3a0fc03493ca85f876f7134eca98e34fe4c351d7c4ae282140"
+    },
+    {
+      "name": "jarvis-canonical-512.webp",
+      "uri": "../assets/generated/jarvis-canonical-512.webp",
+      "mimeType": "image/webp",
+      "width": 512,
+      "height": 512,
+      "sha256": "19d5af8daa09f5ad886b00b8e40332fd9d6885b45f7f3ef3f2311eae658a6bac"
+    },
+    {
+      "name": "jarvis-dark-512.png",
+      "uri": "../assets/generated/jarvis-dark-512.png",
+      "mimeType": "image/png",
+      "width": 512,
+      "height": 512,
+      "sha256": "83b323bb700d2bcd7d655412cb94cb0441ea8ab15df2c84883c97da7038200cc"
+    },
+    {
+      "name": "jarvis-dark-512.webp",
+      "uri": "../assets/generated/jarvis-dark-512.webp",
+      "mimeType": "image/webp",
+      "width": 512,
+      "height": 512,
+      "sha256": "4be0e4d5e6cb6e82ed96b83017c8b2fd2e7a65bfbd1e5af43f598efde5fef8d8"
+    },
+    {
+      "name": "jarvis-light-512.png",
+      "uri": "../assets/generated/jarvis-light-512.png",
+      "mimeType": "image/png",
+      "width": 512,
+      "height": 512,
+      "sha256": "561ab90b074af8f022a5f657f4b3f6e74ec97148cce81c7dd02e979bc3139422"
+    },
+    {
+      "name": "jarvis-light-512.webp",
+      "uri": "../assets/generated/jarvis-light-512.webp",
+      "mimeType": "image/webp",
+      "width": 512,
+      "height": 512,
+      "sha256": "829b3930b8ca057ec83f4313d420d0d86beec4cd3f25b0ff96480a0613ee75ab"
+    }
+  ]
+}

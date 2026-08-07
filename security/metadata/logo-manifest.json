@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "asset": "jarvis",
+  "sourceOfTruth": "token/assets",
+  "variants": {
+    "canonical": "../assets/jarvis-green.png",
+    "dark": "../assets/jarvis-logo-dark.png",
+    "light": "../assets/jarvis-logo-light.png"
+  },
+  "generatedSizes": [
+    16,
+    32,
+    64,
+    128,
+    180,
+    192,
+    256,
+    512
+  ],
+  "generatedFormats": [
+    "png",
+    "webp"
+  ],
+  "displayPolicy": {
+    "defaultVariant": "canonical",
+    "fallbackAlt": "JARVIS token",
+    "preserveAspectRatio": true,
+    "backgroundRequired": false,
+    "useRepresentationBadge": true,
+    "keepTickerAcrossRepresentations": true
+  }
+}

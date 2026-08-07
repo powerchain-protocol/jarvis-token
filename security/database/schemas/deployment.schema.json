@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/deployment.schema.json",
+  "title": "JARVIS Deployment Evidence",
+  "type": "object",
+  "required": [
+    "environment",
+    "canonicalChain",
+    "verified",
+    "updatedAt"
+  ],
+  "properties": {
+    "environment": {
+      "enum": [
+        "testnet",
+        "mainnet"
+      ]
+    },
+    "canonicalChain": {
+      "const": "sui"
+    },
+    "suiCoinType": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "solanaMint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "wormholeProvider": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

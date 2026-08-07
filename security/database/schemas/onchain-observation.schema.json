@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/onchain-observation.json",
+  "title": "JARVIS On-chain Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assetId", "environment", "sui", "solana", "observedAt"],
+  "properties": {
+    "assetId": { "const": "jarvis" },
+    "environment": { "enum": ["testnet", "mainnet"] },
+    "sui": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coinType", "decimals", "totalSupplyBaseUnits", "source"],
+      "properties": {
+        "coinType": { "type": "string", "minLength": 1 },
+        "decimals": { "const": 6 },
+        "totalSupplyBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+        "source": { "type": "string", "minLength": 1 }
+      }
+    },
+    "solana": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mint", "decimals", "totalSupplyBaseUnits", "source"],
+      "properties": {
+        "mint": { "type": "string", "minLength": 1 },
+        "decimals": { "const": 6 },
+        "totalSupplyBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+        "freezeAuthority": { "type": ["string", "null"] },
+        "source": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observedAt": { "type": "string", "format": "date-time" }
+  }
+}

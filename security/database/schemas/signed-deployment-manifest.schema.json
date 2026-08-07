@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/signed-deployment-manifest.json",
+  "title": "JARVIS Signed Deployment Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest",
+    "digest"
+  ],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "environment",
+        "assetId",
+        "canonicalChain",
+        "suiCoinType",
+        "solanaMint",
+        "wormholeProviderId",
+        "generatedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "environment": {
+          "enum": [
+            "testnet",
+            "mainnet"
+          ]
+        },
+        "assetId": {
+          "const": "jarvis"
+        },
+        "canonicalChain": {
+          "const": "sui"
+        },
+        "suiCoinType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "solanaMint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "wormholeProviderId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signer": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

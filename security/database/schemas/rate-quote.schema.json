@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/rate-quote.schema.json",
+  "title": "JARVIS Rate Quote",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "baseAssetId",
+    "quoteCurrency",
+    "rate",
+    "source",
+    "observedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "baseAssetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "quoteCurrency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 8
+    },
+    "rate": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\\\.[0-9]+)?$"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
