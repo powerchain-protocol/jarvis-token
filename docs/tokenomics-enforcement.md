@@ -6,7 +6,7 @@ The `/token` package now enforces the accounting rules that an approved future
 allocation must satisfy:
 
 - 10,000 basis points exactly;
-- 18,440,000,000,000,000 base units exactly;
+- 20,000,000,000,000,000 base units exactly;
 - explicit integer rounding adjustments;
 - unique allocation identities;
 - custody identity for each allocation;

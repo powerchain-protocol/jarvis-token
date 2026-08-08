@@ -19,7 +19,7 @@ const required = [
 for (const file of required) if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing ${file}`);
 
 const policy = JSON.parse(fs.readFileSync(path.join(root, "config/allocation-policy.json"),"utf8"));
-if (policy.maximumSupplyBaseUnits !== "18440000000000000") throw new Error("Allocation policy supply does not match canonical JARVIS supply");
+if (policy.maximumSupplyBaseUnits !== "20000000000000000") throw new Error("Allocation policy supply does not match canonical JARVIS supply");
 if (policy.percentageScaleBps !== 10000) throw new Error("Allocation policy must use 10000 basis points");
 if (policy.allocationStatus !== "unapproved") throw new Error("Release candidate must not invent a final allocation");
 if (policy.requirements.finalPercentagesPublished !== false) throw new Error("Final allocation percentages must remain unpublished until approved");

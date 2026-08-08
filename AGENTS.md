@@ -9,7 +9,7 @@ JARVIS
 ├── Sui
 │   ├── type: canonical
 │   ├── decimals: 6
-│   └── fixed supply: 18,440,000,000 whole tokens (18,440,000,000,000,000 base units)
+│   └── fixed supply: 20,000,000,000 whole tokens (20,000,000,000,000,000 base units)
 └── Solana
     ├── type: bridged
     ├── provider: Wormhole NTT
@@ -18,7 +18,7 @@ JARVIS
 ```
 
 - Cross-chain invariant is exact **1:1 backing**. SUI/SOL gas and priority fees are separate transaction costs and never reduce the JARVIS amount represented.
-- The canonical Sui package mints the complete fixed supply at publication, consumes the `TreasuryCap` via `coin::treasury_into_supply`, freezes the `CoinMetadata` and the `FixedSupply` proof object, and transfers the whole supply to the publisher. There is **no public mint path after init** and no independent Solana issuance schedule.
+- The canonical Sui package mints the complete 20B maximum supply at publication and seals the `TreasuryCap` inside the module-private `BurnAuthority`. There is **no public mint path after init**. The only post-genesis cap-backed operation is a burn capped at 2% per 90-day window. Production finalization requires destroying the package `UpgradeCap` after source/bytecode verification so a future upgrade cannot add a mint path.
 - The Solana Token-2022 mint starts at zero supply; its mint authority is the verified Wormhole NTT bridge authority and its freeze authority must be disabled.
 - User-facing ticker is always **JARVIS** with a `Canonical` or `Bridged` badge. Never introduce `wJARVIS` or any wrapped naming.
 
@@ -38,8 +38,9 @@ utils/                precision, identity, hashing helpers
 validation/           canonical asset-model validation
 config/               asset.json, tokenomics.policy.json, allocation-policy.json,
                       deployments/{mainnet,testnet}.json (fail-closed templates)
-contracts/sui-mainnet/   canonical Sui Move package (jarvis.move)
-contracts/sui-testnet/   Testnet mirror of the Move package (only Move.toml differs)
+contracts/jarvis_token/sources/jarvis.move  only authoritative Sui Move module
+contracts/mainnet/                     Mainnet Move/deployment profile
+contracts/devnet/                      Devnet Move/deployment profile
 programs/solana/      Token-2022 representation profiles (mainnet/testnet JSON)
 database/schemas/     portable JSON persistence schemas
 metadata/             canonical metadata and integrity/asset/logo manifests
@@ -63,7 +64,7 @@ Useful individual validators (run from the repository root):
 
 ```bash
 node scripts/validate-token.mjs                   # canonical model validation
-node scripts/validate-sui-contract-profiles.mjs   # mainnet/testnet source drift check
+node scripts/validate-sui-contract-profiles.mjs   # single-source mainnet/devnet profile check
 node scripts/validate-monitoring.mjs              # live-monitoring safety gate checks
 node scripts/validate-claims-pricing.mjs          # claim & pricing safety checks
 node scripts/validate-tokenomics-enforcement.mjs  # allocation/vesting/treasury checks
@@ -75,11 +76,11 @@ node scripts/security-audit.mjs                   # secret/authority policy audi
 
 Always run `pnpm check` before considering a change complete.
 
-## Sui contracts (mainnet / testnet)
+## Sui contracts (canonical source + mainnet/devnet profiles)
 
-- `contracts/sui-mainnet/sources/jarvis.move` and `contracts/sui-testnet/sources/jarvis.move` must stay **byte-identical**; only their `Move.toml` files differ (`name` and the Sui framework rev: `mainnet` vs `framework/testnet`). `validate-sui-contract-profiles.mjs` and `validate-token-upgrade.mjs` enforce this — do not edit one copy without the other.
-- Frozen constants in the Move source: `DECIMALS = 6`, `MAXIMUM_WHOLE_SUPPLY = 18_440_000_000`, `MAXIMUM_BASE_UNITS = 18_440_000_000_000_000`. These match `constants/monetary.ts` and `config/tokenomics.policy.json` — keep all three in sync.
-- The module keeps `coin::total_supply`, `decimals()`, `maximum_whole_supply()`, `maximum_base_units()`, `total_supply(FixedSupply)`, and `is_canonical_fixed_supply()` view functions. Upgrades must preserve the fixed-supply proof (`treasury_into_supply`, frozen `FixedSupply` object).
+- `contracts/jarvis_token/sources/jarvis.move` is the **only** JARVIS Move source. `contracts/mainnet/Move.toml` and `contracts/devnet/Move.toml` are profile manifests consumed by the preparation script; do not add source mirrors under either profile directory.
+- Frozen constants in the Move source: `DECIMALS = 6`, `MAXIMUM_WHOLE_SUPPLY = 20_000_000_000`, `MAXIMUM_BASE_UNITS = 20_000_000_000_000_000`. These match `constants/monetary.ts` and `config/tokenomics.policy.json` — keep all three in sync.
+- The module keeps `coin::total_supply`, `decimals()`, `maximum_whole_supply()`, `maximum_base_units()`, burn-policy views, and the sealed `BurnAuthority`. Upgrades must preserve the 20B maximum issuance, absence of post-genesis mint entry points, 2%/90-day burn ceiling, and permanent no-remint policy.
 
 ## Upgrade validation
 
@@ -87,7 +88,7 @@ Always run `pnpm check` before considering a change complete.
 
 - corrected reverse-route reserve equation (`bridgedSolanaBaseUnits + pendingForward + pendingReverse` in `functions/supply.ts`);
 - canonical Sui / bridged Solana role split in `functions/deployment.ts` (`canonicalSuiDeploymentReadiness`, `bridgedSolanaDeploymentReadiness`, `deploymentReadiness`, `tokenRuntimeReadiness`);
-- mirrored Sui mainnet/testnet source profiles;
+- single canonical Sui source with mainnet/devnet profiles;
 - fixed-supply constants and `TreasuryCap` consumption;
 - fail-closed deployment templates: `config/deployments/{mainnet,testnet}.json` must keep `bridge.enabled`, `sui.verified`, and `solana.verified` all `false` until real on-chain identities are independently verified.
 
@@ -107,6 +108,6 @@ Always run `pnpm check` before considering a change complete.
 
 ## Notes for agents
 
-- `security/index.ts` re-exports only the five real security modules (`activation.ts`, `authorities.ts`, `manifest.ts`, `policy.ts`, `runtime-gate.ts`). The `security/` directory also contains a self-mirrored duplicate of the repository from an earlier layout (`security/common`, `security/contracts`, `security/tests`, …); it is intentionally **not** included in `tsconfig.json` or the test runs. Treat the repository-root modules as the source of truth and avoid editing the mirror.
+- `security/` contains only the token security modules (`activation.ts`, `authorities.ts`, `manifest.ts`, `policy.ts`, `runtime-gate.ts`). Nested repository mirrors under `security/` are prohibited.
 - Validator scripts resolve paths relative to the token root via `import.meta.url`, so they can run from any working directory.
 - Runtime artwork under generated asset directories is produced from `assets/` — never edit generated copies directly.

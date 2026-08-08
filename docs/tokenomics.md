@@ -12,7 +12,7 @@ promise token value, or claim a mainnet deployment.
 ## Executive summary
 
 JARVIS is a fixed-supply utility and settlement asset for JARVIS platform services.
-Exactly 18.44 billion canonical JARVIS are created once on Sui. The complete
+Exactly 20 billion canonical JARVIS are created once on Sui. The complete
 initial supply is delivered to one configured treasury address, after which the
 Sui `TreasuryCap` is destroyed. No canonical inflation function remains.
 
@@ -35,8 +35,8 @@ not create or destroy JARVIS.
 | Version | 1.0.0-rc.0 |
 | Decimals | 6 |
 | One JARVIS | 1,000,000 base units |
-| Maximum whole-token supply | 18,440,000,000 JARVIS |
-| Maximum base-unit supply | 18,440,000,000,000,000 |
+| Maximum whole-token supply | 20,000,000,000 JARVIS |
+| Maximum base-unit supply | 20,000,000,000,000,000 |
 | Monetary model | Fixed supply |
 | Canonical chain | Sui |
 | Initial canonical recipient | One configured treasury address |
@@ -46,7 +46,7 @@ not create or destroy JARVIS.
 The conversion is exact:
 
 ```text
-18,440,000,000 × 10^6 = 18,440,000,000,000,000 base units
+20,000,000,000 × 10^6 = 20,000,000,000,000,000 base units
 ```
 
 All protocol, bridge, AI-accounting, and evidence amounts are expressed as
@@ -71,7 +71,7 @@ or template cannot redefine the supply.
 The Sui package performs issuance only during package initialization:
 
 1. Create the JARVIS currency and metadata.
-2. Mint exactly `18,440,000,000,000,000` base units.
+2. Mint exactly `20,000,000,000,000,000` base units.
 3. Transfer the complete coin to the publishing treasury address.
 4. Convert the `TreasuryCap` into supply state and place it in a frozen
    `FixedSupply` object.
@@ -104,7 +104,7 @@ bridge path.
 At every finalized observation checkpoint:
 
 ```text
-Sui circulating + Sui locked = 18,440,000,000,000,000
+Sui circulating + Sui locked = 20,000,000,000,000,000
 Solana bridged + cross-chain obligations in flight = Sui locked
 ```
 
@@ -165,7 +165,7 @@ Convert approved percentages into integer base units using a documented
 rounding method. The final remainder must be explicitly assigned so that:
 
 ```text
-sum(all allocation base units) = 18,440,000,000,000,000
+sum(all allocation base units) = 20,000,000,000,000,000
 ```
 
 Do not publish a percentage-only table that cannot reconcile exactly to the
@@ -340,7 +340,7 @@ finalized-state verification.
 A JARVIS deployment is conformant only when an independent verifier confirms:
 
 1. The published Sui coin type and Solana mint match the approved record.
-2. Canonical supply equals `18,440,000,000,000,000` base units.
+2. Canonical supply equals `20,000,000,000,000,000` base units.
 3. The initial treasury received the complete canonical supply.
 4. The Sui `TreasuryCap` is unusable and metadata is frozen.
 5. Solana genesis supply was zero and freeze authority is absent.

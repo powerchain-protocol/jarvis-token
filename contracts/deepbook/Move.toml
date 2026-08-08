@@ -1,0 +1,12 @@
+[package]
+name = "jarvis_deepbook"
+version = "1.0.0-rc.1"
+edition = "2024"
+
+# Keep framework revisions pinned to the exact Sui/DeepBook release validated in CI.
+# Do not deploy with floating git branches.
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet" }
+
+[addresses]
+jarvis_deepbook = "0x0"

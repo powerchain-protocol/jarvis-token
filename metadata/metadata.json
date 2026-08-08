@@ -8,8 +8,8 @@
   "decimals": 6,
   "supply": {
     "model": "fixed",
-    "wholeTokens": "18440000000",
-    "baseUnits": "18440000000000000"
+    "wholeTokens": "20000000000",
+    "baseUnits": "20000000000000000"
   },
   "attributes": [
     {

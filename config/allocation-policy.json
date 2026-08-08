@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "assetId": "jarvis",
-  "maximumSupplyBaseUnits": "18440000000000000",
+  "maximumSupplyBaseUnits": "20000000000000000",
   "percentageScaleBps": 10000,
   "allocationStatus": "unapproved",
   "requirements": {

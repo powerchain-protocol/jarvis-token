@@ -32,8 +32,8 @@
     "jarvis:solana:sui:wormhole-ntt"
   ],
   "supply": {
-    "wholeTokens": "18440000000",
-    "baseUnits": "18440000000000000",
+    "wholeTokens": "20000000000",
+    "baseUnits": "20000000000000000",
     "model": "fixed"
   },
   "metadata": {
@@ -45,5 +45,5 @@
     "tokenomics": "../config/tokenomics.policy.json",
     "metadata": "../metadata/metadata.json"
   },
-  "commitmentSha256": "f4e9188a9023e4d41751a5cfb0a9dd4f94b090027b8b8133aa354a24fd421d3e"
+  "commitmentSha256": "fbc17370fb6079e5254598055618fde540fe3cebf68ce5336556985f92e52f05"
 }

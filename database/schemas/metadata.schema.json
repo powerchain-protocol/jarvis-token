@@ -19,8 +19,8 @@
       "required": ["model", "wholeTokens", "baseUnits"],
       "properties": {
         "model": { "const": "fixed" },
-        "wholeTokens": { "const": "18440000000" },
-        "baseUnits": { "const": "18440000000000000" }
+        "wholeTokens": { "const": "20000000000" },
+        "baseUnits": { "const": "20000000000000000" }
       }
     },
     "attributes": {

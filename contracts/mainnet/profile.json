@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "profile": "mainnet",
+  "production": true,
+  "source": "../jarvis_token/sources/jarvis.move",
+  "frameworkRevision": "mainnet",
+  "release": "1.0.0-rc.1",
+  "requiresVerifiedDeploymentEvidence": true,
+  "canonicalEconomicAsset": true
+}

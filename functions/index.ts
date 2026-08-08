@@ -4,6 +4,7 @@ export * from "./supply.ts";
 export * from "./reconciliation.ts";
 export * from "./health.ts";
 export * from "./deployment.ts";
+export * from "./deployment-evidence.ts";
 export * from "./metadata.ts";
 export * from "./onchain-verification.ts";
 export * from "./reserve-monitor.ts";
@@ -17,3 +18,12 @@ export * from "./vesting.ts";
 export * from "./treasury.ts";
 export * from "./circulation.ts";
 export * from "./allocation-claims.ts";
+
+export * from "./ai-usage.ts";
+export * from "./tokenized-chat.ts";
+
+export * from "./ai-settlement.ts";
+
+export * from "./burn.ts";
+
+export * from "./bridge-accounting.ts";

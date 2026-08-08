@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "environment": "testnet",
   "asset": "jarvis",
   "canonicalChain": "sui",
-  "sourceProfile": "token/contracts/sui-testnet",
+  "sourceProfile": "token/contracts/devnet",
   "sui": {
     "packageId": null,
     "coinType": null,
@@ -21,7 +21,8 @@
     "mintAuthority": null,
     "freezeAuthority": null,
     "genesisSupplyBaseUnits": "0",
-    "verified": false
+    "verified": false,
+    "bridgeProgramId": null
   },
   "bridge": {
     "enabled": false,

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jarvis.ai/schemas/token/ai-usage-record.schema.json",
+  "title": "JARVIS AI Usage Record",
+  "type": "object",
+  "required": ["id", "sessionId", "messageId", "kind", "createdAt", "network", "settlement", "usage"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "messageId": { "type": "string", "minLength": 1 },
+    "kind": { "enum": ["chat", "agent", "tool", "embedding", "image", "audio", "video"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "network": { "enum": ["sui", "solana"] },
+    "settlement": { "enum": ["unquoted", "quoted", "approval-required", "settled", "failed"] },
+    "quotedBaseUnits": { "type": "string", "pattern": "^[0-9]+$" },
+    "transactionDigest": { "type": "string", "minLength": 1 },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "promptTokens": { "type": "string", "pattern": "^[0-9]+$" },
+        "completionTokens": { "type": "string", "pattern": "^[0-9]+$" },
+        "cachedInputTokens": { "type": "string", "pattern": "^[0-9]+$" },
+        "toolCalls": { "type": "string", "pattern": "^[0-9]+$" },
+        "imageUnits": { "type": "string", "pattern": "^[0-9]+$" },
+        "audioSeconds": { "type": "string", "pattern": "^[0-9]+$" },
+        "videoSeconds": { "type": "string", "pattern": "^[0-9]+$" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

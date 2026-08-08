@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function LegalPage(){return <main className="shell"><article className="card"><h1>Privacy</h1><p>This release-candidate text is a product placeholder and must be reviewed and replaced or approved by qualified counsel before a public token sale is enabled.</p><p>The sale is designed to fail closed until jurisdiction, eligibility, sanctions, tax, refund, risk, privacy, and consumer disclosures are configured for the intended offering.</p><Link href="/">Back to Token Sale</Link></article></main>}

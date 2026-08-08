@@ -4,7 +4,7 @@ import { evaluateJarvisSupplyInvariant } from "../functions/supply.ts";
 import { canonicalSuiDeploymentReadiness, bridgedSolanaDeploymentReadiness } from "../functions/deployment.ts";
 
 test("reverse burn remains a canonical custody liability until Sui release", () => {
-  const total = 18_440_000_000_000_000n;
+  const total = 20_000_000_000_000_000n;
   const report = evaluateJarvisSupplyInvariant({
     canonicalCirculatingBaseUnits: total - 100n,
     canonicalLockedBaseUnits: 100n,
@@ -22,8 +22,8 @@ test("canonical Sui token can be ready before Solana bridge representation", () 
     verified: false,
     sui: {
       packageId: "0x1", coinType: "0x1::jarvis::JARVIS", metadataObjectId: "0x2", fixedSupplyObjectId: "0x3",
-      publishedTransactionDigest: "tx", observedSupplyBaseUnits: 18_440_000_000_000_000n, treasuryCapExists: false,
-      sourceProfile: "token/contracts/sui-testnet" as const, verified: true,
+      publishedTransactionDigest: "tx", observedSupplyBaseUnits: 20_000_000_000_000_000n, treasuryCapExists: false,
+      sourceProfile: "token/contracts/devnet" as const, verified: true,
     },
   };
   assert.equal(canonicalSuiDeploymentReadiness(input).ready, true);

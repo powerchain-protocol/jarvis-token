@@ -31,8 +31,10 @@ token/
 │   ├── allocation-policy.json
 │   └── treasury-policy.example.json
 ├── contracts/
-│   ├── sui-mainnet/
-│   └── sui-testnet/
+│   ├── jarvis_token/
+│   │   └── sources/jarvis.move   # authoritative Move source
+│   ├── mainnet/                  # production profile only
+│   └── devnet/                   # non-production profile only
 ├── programs/
 │   └── solana/
 ├── metadata/
@@ -61,7 +63,8 @@ token/
 
 ## Ownership boundaries
 
-- **Canonical supply and issuance:** `contracts/sui-mainnet`.
+- **Canonical supply and issuance source:** `contracts/jarvis_token/sources/jarvis.move`.
+- **Environment profiles:** `contracts/mainnet` and `contracts/devnet`.
 - **Official Solana representation profile:** `programs/solana`.
 - **Bridge execution:** root `contracts/jarvis_bridge`, `programs/solana-jarvis-bridge`, Bridge domain, and Wormhole infrastructure adapter.
 - **Public token identity:** `config/asset.json`, `metadata/metadata.json`, and `constants/`.

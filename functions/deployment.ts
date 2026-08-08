@@ -1,6 +1,7 @@
 import { canonicalJson } from "../utils/canonical-json.ts";
 import type { JarvisEnvironment } from "../common/types.ts";
 import { JARVIS_TOKEN } from "../constants/token.ts";
+import { isFullSuiCoinType, isFullSuiObjectId, isExactSolanaPublicKey } from "./deployment-evidence.ts";
 
 export interface SuiCanonicalDeploymentEvidence {
   packageId?: string;
@@ -10,7 +11,7 @@ export interface SuiCanonicalDeploymentEvidence {
   publishedTransactionDigest?: string;
   observedSupplyBaseUnits?: bigint;
   treasuryCapExists?: boolean;
-  sourceProfile: "token/contracts/sui-mainnet" | "token/contracts/sui-testnet";
+  sourceProfile: "token/contracts/mainnet" | "token/contracts/devnet";
   verified: boolean;
 }
 
@@ -18,6 +19,7 @@ export interface SolanaBridgedDeploymentEvidence {
   mint?: string;
   tokenProgram?: "Token-2022";
   nttManagerProgramId?: string;
+  bridgeProgramId?: string;
   mintAuthority?: string;
   freezeAuthority?: string | null;
   observedSupplyBaseUnits?: bigint;
@@ -87,6 +89,31 @@ export function deploymentReadiness(input: TokenDeploymentDescriptor): Deploymen
     ...bridgedSolanaDeploymentReadiness(input).reasons,
   ];
   if (!input.verified) reasons.push("deployment-not-verified");
+  return uniqueReasons(reasons);
+}
+
+
+export function productionDeploymentReadiness(input: TokenDeploymentDescriptor): DeploymentReadinessReport {
+  const reasons = [...deploymentReadiness(input).reasons];
+  if (input.environment !== "mainnet") reasons.push("production-environment-must-be-mainnet");
+
+  const packageId = input.sui?.packageId;
+  const coinType = input.sui?.coinType ?? input.suiCoinType;
+  if (packageId && !isFullSuiObjectId(packageId)) reasons.push("sui-package-id-not-full-32-byte-identity");
+  if (coinType && !isFullSuiCoinType(coinType, packageId)) reasons.push("sui-coin-type-not-full-or-package-mismatch");
+  if (input.sui?.metadataObjectId && !isFullSuiObjectId(input.sui.metadataObjectId)) reasons.push("sui-metadata-object-id-not-full");
+  if (input.sui?.fixedSupplyObjectId && !isFullSuiObjectId(input.sui.fixedSupplyObjectId)) reasons.push("sui-fixed-supply-object-id-not-full");
+
+  const solanaKeys: Array<[string, string | undefined]> = [
+    ["solana-mint-invalid", input.solana?.mint ?? input.solanaMint],
+    ["solana-ntt-manager-invalid", input.solana?.nttManagerProgramId],
+    ["solana-bridge-program-invalid", input.solana?.bridgeProgramId],
+    ["solana-mint-authority-invalid", input.solana?.mintAuthority],
+  ];
+  for (const [reason, value] of solanaKeys) if (!value || !isExactSolanaPublicKey(value)) reasons.push(reason);
+  if (!input.solana?.bridgeProgramId) reasons.push("solana-bridge-program-missing");
+  if (input.sui?.observedSupplyBaseUnits !== JARVIS_TOKEN.maximumBaseUnits) reasons.push("sui-production-supply-not-exact-fixed-supply");
+  if (input.solana?.observedSupplyBaseUnits !== undefined && input.solana.observedSupplyBaseUnits > JARVIS_TOKEN.maximumBaseUnits) reasons.push("solana-production-supply-exceeds-cap");
   return uniqueReasons(reasons);
 }
 

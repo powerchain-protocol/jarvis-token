@@ -1,72 +1,88 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://jarvis.ai/schemas/token/signed-deployment-manifest.json",
-  "title": "JARVIS Signed Deployment Manifest",
+  "$id": "https://jarvis.ai/schemas/token/signed-deployment-manifest.schema.json",
+  "title": "JARVIS Signed Deployment Evidence",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "manifest",
-    "digest"
-  ],
+  "required": ["schemaVersion", "manifest", "commitment", "signatures"],
   "properties": {
+    "schemaVersion": { "const": 2 },
     "manifest": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "environment",
-        "assetId",
-        "canonicalChain",
-        "suiCoinType",
-        "solanaMint",
-        "wormholeProviderId",
-        "generatedAt"
-      ],
+      "required": ["schemaVersion", "environment", "assetId", "canonicalChain", "generatedAt", "economics", "sui", "solana", "bridge"],
       "properties": {
-        "schemaVersion": {
-          "const": 1
+        "schemaVersion": { "const": 2 },
+        "environment": { "enum": ["testnet", "mainnet"] },
+        "assetId": { "const": "jarvis" },
+        "canonicalChain": { "const": "sui" },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "economics": {
+          "type": "object", "additionalProperties": false,
+          "required": ["decimals", "fixedSupplyBaseUnits", "canonicalMintingAfterGenesis", "exactOneToOne"],
+          "properties": {
+            "decimals": { "const": 6 },
+            "fixedSupplyBaseUnits": { "const": "20000000000000000" },
+            "canonicalMintingAfterGenesis": { "const": false },
+            "exactOneToOne": { "const": true }
+          }
         },
-        "environment": {
-          "enum": [
-            "testnet",
-            "mainnet"
-          ]
+        "sui": {
+          "type": "object", "additionalProperties": false,
+          "required": ["packageId", "coinType", "metadataObjectId", "fixedSupplyObjectId", "publishedTransactionDigest"],
+          "properties": {
+            "packageId": { "type": "string", "pattern": "^0x[a-f0-9]{64}$" },
+            "coinType": { "type": "string", "minLength": 70 },
+            "metadataObjectId": { "type": "string", "pattern": "^0x[a-f0-9]{64}$" },
+            "fixedSupplyObjectId": { "type": "string", "pattern": "^0x[a-f0-9]{64}$" },
+            "publishedTransactionDigest": { "type": "string", "minLength": 32 }
+          }
         },
-        "assetId": {
-          "const": "jarvis"
+        "solana": {
+          "type": "object", "additionalProperties": false,
+          "required": ["mint", "nttManagerProgramId", "bridgeProgramId", "mintAuthority", "tokenProgram"],
+          "properties": {
+            "mint": { "type": "string", "minLength": 32, "maxLength": 44 },
+            "nttManagerProgramId": { "type": "string", "minLength": 32, "maxLength": 44 },
+            "bridgeProgramId": { "type": "string", "minLength": 32, "maxLength": 44 },
+            "mintAuthority": { "type": "string", "minLength": 32, "maxLength": 44 },
+            "tokenProgram": { "const": "Token-2022" }
+          }
         },
-        "canonicalChain": {
-          "const": "sui"
-        },
-        "suiCoinType": {
-          "type": "string",
-          "minLength": 1
-        },
-        "solanaMint": {
-          "type": "string",
-          "minLength": 1
-        },
-        "wormholeProviderId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "generatedAt": {
-          "type": "string",
-          "format": "date-time"
+        "bridge": {
+          "type": "object", "additionalProperties": false,
+          "required": ["provider", "protocol", "canonicalMode", "bridgedMode"],
+          "properties": {
+            "provider": { "const": "wormhole" },
+            "protocol": { "const": "ntt" },
+            "canonicalMode": { "const": "lock-release" },
+            "bridgedMode": { "const": "mint-burn" }
+          }
         }
       }
     },
-    "digest": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+    "commitment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "value"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "canonicalization": { "const": "jarvis-canonical-json-v1" },
+        "value": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
     },
-    "signature": {
-      "type": "string",
-      "minLength": 1
-    },
-    "signer": {
-      "type": "string",
-      "minLength": 1
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["signer", "signature", "algorithm", "signedAt"],
+        "properties": {
+          "signer": { "type": "string", "minLength": 32 },
+          "signature": { "type": "string", "minLength": 1 },
+          "algorithm": { "enum": ["ed25519", "secp256k1", "external"] },
+          "signedAt": { "type": "string", "format": "date-time" }
+        }
+      }
     }
   }
 }

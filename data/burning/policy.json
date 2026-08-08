@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "asset": "JARVIS",
+  "maximumQuarterlyBurnBps": 200,
+  "windowDays": 90,
+  "automaticBurn": false,
+  "basis": "circulating-supply-at-window-open",
+  "requiresOnchainAuthorization": true,
+  "requiresPackageUpgradeCapDestroyed": true,
+  "notes": "Burns reduce outstanding canonical supply permanently. The 2% value is a hard per-window ceiling, not a guaranteed burn amount."
+}

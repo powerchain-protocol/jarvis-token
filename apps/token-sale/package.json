@@ -1,0 +1,8 @@
+{
+  "name": "@jarvis-ai/token-sale",
+  "version": "1.0.0-rc.1",
+  "private": true,
+  "scripts": {"dev":"next dev -p 3012","build":"next build","start":"next start -p 3012","typecheck":"tsc --noEmit"},
+  "dependencies": {"next":"16.2.6","react":"^19","react-dom":"^19","server-only":"^0.0.1"},
+  "devDependencies": {"@types/node":"^24","@types/react":"^19","@types/react-dom":"^19","typescript":"^5.9.3"}
+}

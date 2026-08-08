@@ -23,7 +23,7 @@ test("approved allocation reconciles exactly to fixed supply", () => {
         beneficiaryClass: "treasury",
         custodyAddress: "0xabc",
         percentageBps: 10_000,
-        amountBaseUnits: 18_440_000_000_000_000n,
+        amountBaseUnits: 20_000_000_000_000_000n,
       },
     ],
   };
@@ -72,7 +72,7 @@ test("circulating supply excludes restricted balances", () => {
     allocationLockedBaseUnits: 20_000n,
     bridgeLockedBaseUnits: 30_000n,
   });
-  assert.equal(report.circulatingBaseUnits, 18_440_000_000_000_000n - 60_000n);
+  assert.equal(report.circulatingBaseUnits, 20_000_000_000_000_000n - 60_000n);
 });
 
 test("treasury movement requires independent approval", () => {

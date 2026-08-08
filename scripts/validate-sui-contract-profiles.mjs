@@ -4,19 +4,32 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const sourcePath = path.join(root, "contracts/jarvis_token/sources/jarvis.move");
+const mainnetToml = fs.readFileSync(path.join(root, "contracts/mainnet/Move.toml"), "utf8");
+const devnetToml = fs.readFileSync(path.join(root, "contracts/devnet/Move.toml"), "utf8");
+const source = fs.readFileSync(sourcePath);
 
-const mainnetToml = fs.readFileSync(path.join(root, "contracts/sui-mainnet/Move.toml"), "utf8");
-const testnetToml = fs.readFileSync(path.join(root, "contracts/sui-testnet/Move.toml"), "utf8");
-const mainnetSource = fs.readFileSync(path.join(root, "contracts/sui-mainnet/sources/jarvis.move"));
-const testnetSource = fs.readFileSync(path.join(root, "contracts/sui-testnet/sources/jarvis.move"));
-const bridgeReadme = fs.readFileSync(path.join(root, "contracts/README.md"), "utf8");
-
-if (!mainnetToml.includes('rev = "mainnet"')) throw new Error("Canonical Sui profile must target the Sui mainnet revision");
-if (!testnetToml.includes('rev = "framework/testnet"')) throw new Error("Testnet Sui profile must target framework/testnet");
-if (!mainnetSource.equals(testnetSource)) throw new Error("Mainnet/Testnet JARVIS Move sources have drifted");
-const source = mainnetSource.toString("utf8");
-for (const needle of ["const DECIMALS: u8 = 6", "18_440_000_000_000_000", "treasury_into_supply", "public_freeze_object(fixed_supply)"]) {
-  if (!source.includes(needle)) throw new Error(`Canonical JARVIS source invariant missing: ${needle}`);
+if (!mainnetToml.includes('version = "1.0.0-rc.1"')) throw new Error("Mainnet Move profile release mismatch");
+if (!devnetToml.includes('version = "1.0.0-rc.1"')) throw new Error("Devnet Move profile release mismatch");
+if (!mainnetToml.includes('rev = "mainnet"')) throw new Error("Canonical Sui profile must target mainnet");
+if (!devnetToml.includes('rev = "devnet"')) throw new Error("Devnet Sui profile must target devnet");
+for (const legacy of ["contracts/sui-mainnet", "contracts/sui-testnet"]) {
+  if (fs.existsSync(path.join(root, legacy))) throw new Error(`Legacy duplicated contract tree must not exist: ${legacy}`);
 }
-if (!bridgeReadme.toLowerCase().includes("lock") && !bridgeReadme.toLowerCase().includes("bridge")) throw new Error("Bridge contract boundary documentation missing");
-console.log(`Sui token profiles validated: ${crypto.createHash("sha256").update(mainnetSource).digest("hex")}`);
+const moveSources = [];
+const walk = (dir) => {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const absolute = path.join(dir, entry.name);
+    if (entry.isDirectory()) walk(absolute);
+    else if (entry.name === "jarvis.move") moveSources.push(path.relative(root, absolute).replaceAll(path.sep, "/"));
+  }
+};
+walk(path.join(root, "contracts"));
+if (moveSources.length !== 1 || moveSources[0] !== "contracts/jarvis_token/sources/jarvis.move") {
+  throw new Error(`Exactly one canonical JARVIS Move source is allowed; found ${moveSources.join(", ")}`);
+}
+const text = source.toString("utf8");
+for (const needle of ["const DECIMALS: u8 = 6", "20_000_000_000_000_000", "public struct BurnAuthority has key", "MAX_BURN_BPS_PER_WINDOW: u64 = 200", "public entry fun burn"]) {
+  if (!text.includes(needle)) throw new Error(`Canonical JARVIS source invariant missing: ${needle}`);
+}
+console.log(`Sui token profiles validated: one canonical source, sha256=${crypto.createHash("sha256").update(source).digest("hex")}`);

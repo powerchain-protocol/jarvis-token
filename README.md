@@ -13,7 +13,7 @@ JARVIS
 ├── Sui
 │   ├── type: canonical
 │   ├── decimals: 6
-│   └── fixed supply: 18,440,000,000
+│   └── fixed supply: 20,000,000,000
 └── Solana
     ├── type: bridged
     ├── provider: Wormhole NTT
@@ -48,8 +48,8 @@ token/
 │   ├── allocation-policy.json      # allocation enforcement policy
 │   └── treasury-policy.example.json # governance template; not production approval
 ├── contracts/
-│   ├── sui-mainnet/                # canonical Sui Move package
-│   └── sui-testnet/                # Testnet package mirror
+│   ├── mainnet/                # canonical Sui Move package
+│   └── devnet/                # Devnet build/deployment profile
 ├── docs/
 │   ├── tokenomics.md
 │   └── tokenomics-enforcement.md
@@ -77,8 +77,8 @@ See [`STRUCTURE.md`](STRUCTURE.md) for ownership boundaries.
 | Name | JARVIS |
 | Symbol | JARVIS |
 | Decimals | 6 |
-| Whole-token supply | 18,440,000,000 |
-| Base-unit supply | 18,440,000,000,000,000 |
+| Whole-token supply | 20,000,000,000 |
+| Base-unit supply | 20,000,000,000,000,000 |
 | Canonical chain | Sui |
 | Solana genesis supply | 0 |
 | Solana representation | Bridged · Wormhole NTT · Token-2022 |
@@ -87,7 +87,7 @@ Full policy: [`TOKENOMICS.md`](TOKENOMICS.md) and [`config/tokenomics.policy.jso
 
 ## Sui canonical issuance
 
-The canonical package lives in [`contracts/sui-mainnet/`](contracts/sui-mainnet/). The Testnet mirror lives in [`contracts/sui-testnet/`](contracts/sui-testnet/).
+The authoritative Move module lives at [`contracts/jarvis_token/sources/jarvis.move`](contracts/jarvis_token/sources/jarvis.move). [`contracts/mainnet/`](contracts/mainnet/) and [`contracts/devnet/`](contracts/devnet/) are environment profiles only; they never duplicate the token source.
 
 The token package is designed so that:
 
@@ -303,7 +303,7 @@ Market prices and FX-style rates are informational and never change the exact 1:
 
 ## Tokenomics and treasury enforcement
 
-The token package now enforces allocation, vesting, treasury, and circulating-supply accounting in integer base units. This release candidate still does not assert a final JARVIS allocation. Future approved allocations must reconcile exactly to 10,000 basis points and the fixed 18,440,000,000,000,000 base-unit supply, with explicit rounding adjustments, governance evidence, custody identities, and independent reviewers. Treasury movements redistribute existing JARVIS only and cannot alter the fixed supply.
+The token package now enforces allocation, vesting, treasury, and circulating-supply accounting in integer base units. This release candidate still does not assert a final JARVIS allocation. Future approved allocations must reconcile exactly to 10,000 basis points and the fixed 20,000,000,000,000,000 base-unit supply, with explicit rounding adjustments, governance evidence, custody identities, and independent reviewers. Treasury movements redistribute existing JARVIS only and cannot alter the fixed supply.
 
 
 ## Allocation claims and treasury execution
@@ -355,7 +355,7 @@ pnpm token:check
 
 ## Canonical issuance and bridge representation
 
-JARVIS issuance is owned by the token domain, not the bridge domain. The canonical Move source is mirrored in `token/contracts/sui-mainnet/` and `token/contracts/sui-testnet/`; only their framework/network profiles differ. Publishing mints the complete fixed supply, consumes the Sui `TreasuryCap`, freezes the metadata and fixed-supply proof, and transfers the complete supply to the publisher for subsequent treasury/allocation operations.
+JARVIS issuance is owned by the token domain, not the bridge domain. The canonical Move source exists once at `token/contracts/jarvis_token/sources/jarvis.move`; `token/contracts/mainnet/` and `token/contracts/devnet/` contain build/deployment profiles only. Publishing mints the complete fixed supply, consumes the Sui `TreasuryCap`, freezes the metadata and fixed-supply proof, and transfers the complete supply to the publisher for subsequent treasury/allocation operations.
 
 The Solana Token-2022 mint is an official **bridged representation** with zero genesis supply. Its mint authority is expected to be the approved Wormhole NTT bridge authority and its freeze authority must be disabled. Cross-chain accounting remains exact 1:1.
 
@@ -375,4 +375,29 @@ pnpm token:upgrade:validate
 pnpm token:check
 ```
 
-The upgrade validator protects the corrected reverse-route reserve equation, canonical Sui/bridged Solana role split, mirrored Sui source profiles, fixed supply constants, TreasuryCap consumption, and fail-closed deployment templates.
+The upgrade validator protects the corrected reverse-route reserve equation, canonical Sui/bridged Solana role split, single-source Sui profile layout, fixed supply constants, TreasuryCap consumption, and fail-closed deployment templates.
+
+## AI Assistant and tokenized chat integration
+
+The token domain now exposes provider-neutral AI usage accounting for JARVIS-powered assistants, chat, agents, tools, and multimodal services. `functions/ai-usage.ts` accepts an explicit pricing policy and returns deterministic integer JARVIS base-unit quotes; it does not define or silently invent production prices. `functions/tokenized-chat.ts` creates auditable chat usage records and keeps wallet settlement approval explicit.
+
+This separation lets JARVIS AI applications meter prompt/completion/tool/media usage while preserving the token repository as the canonical source for JARVIS identity and monetary policy. Model credentials, chat content, wallet keys, RPC providers, and transaction broadcasting remain application/infrastructure concerns.
+
+Official source: https://github.com/powerchain-protocol/jarvis-token
+
+## Hardened production deployment evidence
+
+Production releases must validate the full Sui package/coin/object identities and the Solana Token-2022 mint, NTT manager, bridge program, and mint-authority identities. Deployment facts are committed with deterministic canonical JSON + SHA-256 and paired signer/signature evidence. See `docs/deployment-evidence.md`.
+
+## 20B canonical supply
+
+The canonical fixed supply is **20,000,000,000 JARVIS** at six decimals, exactly **20,000,000,000,000,000 base units**. See [`docs/supply-20b-migration.md`](docs/supply-20b-migration.md) for the u64 bound, TreasuryCap finalization order, and bridge accounting requirements.
+
+
+## Standalone Token Sale hardening (RC.1)
+
+`apps/token-sale/` is a standalone, fail-closed Next.js sale surface. It defines typed Sui sale phases/assets/prices, integer-only quote arithmetic, idempotency and rate-limit boundaries, public-read caching, Sui gas/effects utilities, embedded-wallet adapter interfaces, legal/disclaimer/cookie surfaces, responsive hooks, loading/error/not-found routes, and server-only safety helpers. The sample 5B JARVIS sale allocation equals 25% of the 20B maximum supply, but all sample phases remain disabled until deployment identifiers, prices, eligibility controls, and legal approvals are finalized.
+
+Canonical burns are capped at **2% per 90-day window** and are never automatic. Bridge representation burns are separate accounting events used only for wrapped-token redemption; they must never be counted as canonical quarterly supply burns.
+
+See `docs/sale/production-boundary.md`, `docs/sui-gas-and-resource-metering.md`, and `docs/bridge-hardening.md`.

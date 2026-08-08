@@ -23,7 +23,7 @@ test("JARVIS decimal conversion is exact", () => {
 
 test("reserve invariant accepts exact bridge backing", () => {
   assert.doesNotThrow(() => assertJarvisSupplyInvariant({
-    canonicalCirculatingBaseUnits: 18_439_999_000_000_000n,
+    canonicalCirculatingBaseUnits: 19_999_999_000_000_000n,
     canonicalLockedBaseUnits: 1_000_000_000n,
     bridgedSolanaBaseUnits: 1_000_000_000n,
   }));

@@ -23,7 +23,8 @@
     "ui/**/*.ts",
     "utils/**/*.ts",
     "validation/**/*.ts",
-    "services/**/*.ts"
+    "services/**/*.ts",
+    "types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

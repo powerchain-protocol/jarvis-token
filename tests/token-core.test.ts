@@ -1,3 +1,4 @@
+import { SUI_U64_MAX, JARVIS_SUPPLY_HEADROOM_BASE_UNITS } from "../constants/token.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { JARVIS_TOKEN } from "../constants/token.ts";
@@ -13,12 +14,12 @@ const sui = `0x${"1".repeat(64)}::jarvis::JARVIS`;
 const solana = "7FLDAMVxiiR6MUvF4dqMxfxDE7TaE4LJRLgypY4EHBgR";
 
 test("JARVIS supply constants are exact", () => {
-  assert.equal(JARVIS_TOKEN.maximumWholeSupply, 18_440_000_000n);
-  assert.equal(JARVIS_TOKEN.maximumBaseUnits, 18_440_000_000_000_000n);
+  assert.equal(JARVIS_TOKEN.maximumWholeSupply, 20_000_000_000n);
+  assert.equal(JARVIS_TOKEN.maximumBaseUnits, 20_000_000_000_000_000n);
 });
 
 test("JARVIS decimal conversion is precision safe", () => {
-  assert.equal(parseJarvisAmount("18440000000"), JARVIS_TOKEN.maximumBaseUnits);
+  assert.equal(parseJarvisAmount("20000000000"), JARVIS_TOKEN.maximumBaseUnits);
   assert.equal(parseJarvisAmount("0.000001"), 1n);
   assert.equal(formatJarvisAmount(1n), "0.000001");
   assert.throws(() => parseJarvisAmount("0.0000001"));
@@ -47,7 +48,7 @@ test("deployment readiness requires canonical and bridged deployment evidence", 
       publishedTransactionDigest: "publish-digest",
       observedSupplyBaseUnits: JARVIS_TOKEN.maximumBaseUnits,
       treasuryCapExists: false,
-      sourceProfile: "token/contracts/sui-testnet",
+      sourceProfile: "token/contracts/devnet",
       verified: true,
     },
     solana: {
@@ -85,4 +86,11 @@ test("token storage clones and rejects duplicate snapshot ids", async () => {
   await storage.appendSnapshot("health", snapshot);
   await assert.rejects(() => storage.appendSnapshot("health", snapshot));
   assert.equal((await storage.listSnapshots({ namespace: "health" })).length, 1);
+});
+
+
+test("canonical supply fits Sui u64 with headroom", () => {
+  assert.equal(JARVIS_TOKEN.maximumBaseUnits, 20_000_000_000_000_000n);
+  assert.ok(JARVIS_TOKEN.maximumBaseUnits < SUI_U64_MAX);
+  assert.equal(JARVIS_SUPPLY_HEADROOM_BASE_UNITS, SUI_U64_MAX - 20_000_000_000_000_000n);
 });

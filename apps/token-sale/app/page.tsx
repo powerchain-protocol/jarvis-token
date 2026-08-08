@@ -1,0 +1,5 @@
+import Link from "next/link";
+import { LegalBanner } from "../components/legal-banner";
+export default function Page() {
+  return <main className="shell"><LegalBanner/><header><p className="eyebrow">JARVIS AI · Sui</p><h1>Token Sale</h1><p className="lede">A fail-closed purchase surface for the canonical 20B fixed-maximum JARVIS supply. Sale allocation: up to 5B JARVIS.</p></header><section className="grid"><article className="card"><h2>Sale status</h2><p>Disabled until production contract identifiers, treasury addresses, phase prices, jurisdiction controls, and deployment evidence are configured.</p><button disabled>Sale unavailable</button></article><article className="card"><h2>Settlement</h2><p>Sui-native purchases use typed coin assets, integer base-unit amounts, transaction simulation, explicit gas budgets, wallet signing, finality verification, and idempotent server records.</p></article></section><footer><Link href="/legal/terms">Terms</Link><Link href="/legal/privacy">Privacy</Link><Link href="/legal/cookies">Cookies</Link><Link href="/legal/disclaimer">Disclaimer</Link></footer></main>;
+}

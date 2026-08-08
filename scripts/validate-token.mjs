@@ -11,8 +11,9 @@ const required = [
   "README.md", "TOKENOMICS.md", "STRUCTURE.md", "tsconfig.json",
   "assets/jarvis-green.png", "assets/jarvis-logo-dark.png", "assets/jarvis-logo-light.png",
   "config/asset.json", "config/tokenomics.policy.json",
-  "contracts/sui-mainnet/Move.toml", "contracts/sui-mainnet/sources/jarvis.move",
-  "contracts/sui-testnet/Move.toml", "contracts/sui-testnet/sources/jarvis.move",
+  "contracts/jarvis_token/sources/jarvis.move",
+  "contracts/mainnet/Move.toml", "contracts/mainnet/profile.json",
+  "contracts/devnet/Move.toml", "contracts/devnet/profile.json",
   "programs/solana/mainnet-token-2022.json", "programs/solana/testnet-token-2022.json",
   "metadata/metadata.json", "metadata/asset-manifest.json", "metadata/logo-manifest.json", "metadata/integrity-manifest.json", "metadata/sui.json", "metadata/solana.json", "metadata/security.json",
   "data/registry.json", "data/health-policy.json",
@@ -34,8 +35,12 @@ for (const [file, value] of [["config/asset.json", asset], ["config/tokenomics.p
 }
 if (asset.canonicalChain !== "sui" || tokenomics.canonicalChain !== "sui" || registry.canonicalChain !== "sui") errors.push("canonical-chain-must-be-sui");
 if (asset.decimals !== 6 || tokenomics.decimals !== 6 || metadata.decimals !== 6) errors.push("decimals-must-be-6");
-if (tokenomics.maximumWholeSupply !== "18440000000" || tokenomics.maximumBaseUnits !== "18440000000000000") errors.push("tokenomics-supply-drift");
-if (metadata.supply.wholeTokens !== "18440000000" || metadata.supply.baseUnits !== "18440000000000000") errors.push("metadata-supply-drift");
+if (tokenomics.maximumWholeSupply !== "20000000000" || tokenomics.maximumBaseUnits !== "20000000000000000") errors.push("tokenomics-supply-drift");
+const canonicalBaseUnits = BigInt(tokenomics.maximumBaseUnits);
+const suiU64Max = (1n << 64n) - 1n;
+if (canonicalBaseUnits !== 20_000_000_000_000_000n) errors.push("canonical-base-units-must-equal-20b-at-6-decimals");
+if (canonicalBaseUnits > suiU64Max) errors.push("canonical-supply-exceeds-sui-u64");
+if (metadata.supply.wholeTokens !== "20000000000" || metadata.supply.baseUnits !== "20000000000000000") errors.push("metadata-supply-drift");
 const canonical = asset.representations.filter((x) => x.type === "canonical");
 const bridged = asset.representations.filter((x) => x.type === "bridged");
 if (canonical.length !== 1 || canonical[0]?.chain !== "sui") errors.push("canonical-representation-invalid");
@@ -47,7 +52,7 @@ if (metadata.properties.solanaRepresentationType !== "bridged") errors.push("met
 if (metadata.deployment.verified !== false && (!metadata.deployment.suiCoinType || !metadata.deployment.solanaMint)) errors.push("metadata-false-positive-deployment");
 if (registry.schemaVersion !== 4) errors.push("registry-schema-version-must-be-4");
 if (!/^[0-9a-f]{64}$/.test(registry.commitmentSha256 ?? "")) errors.push("registry-commitment-invalid");
-if (registry.supply?.baseUnits !== "18440000000000000") errors.push("registry-supply-drift");
+if (registry.supply?.baseUnits !== "20000000000000000") errors.push("registry-supply-drift");
 
 for (const entry of manifest.files) {
   const file = path.join(tokenRoot, "assets", path.basename(entry.uri));
@@ -75,7 +80,7 @@ for (const size of logoManifest.generatedSizes ?? []) {
 }
 
 const textRoots = ["token", "packages/token-core", "integration/bridge/wormhole", "tests"];
-const forbidden = ["Wrapped JARVIS", "wrapped-sui-jarvis", "sui-jarvis-to-solana-wrapped-jarvis", 'solanaRole: "wrapped"'];
+const forbidden = ["Wrapped JARVIS", "wrapped-sui-jarvis", "sui-jarvis-to-solana-wrapped-jarvis", 'solanaRole: "wrapped"', "18440000000", "18_440_000_000", "18,440,000,000", "18.44B", "18.44 billion"];
 for (const rootName of textRoots) {
   const root = path.join(repoRoot, rootName); if (!fs.existsSync(root)) continue;
   const stack = [root];

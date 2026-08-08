@@ -1,6 +1,6 @@
 {
   "name": "@jarvis-ai/token",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "type": "module",
   "exports": {
@@ -17,12 +17,21 @@
     "./deployment": "./functions/deployment.ts",
     "./supply": "./functions/supply.ts",
     "./representations": "./functions/representations.ts",
-    "./monetary-policy": "./constants/monetary.ts"
+    "./monetary-policy": "./constants/monetary.ts",
+    "./burn": "./functions/burn.ts",
+    "./bridge-accounting": "./functions/bridge-accounting.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "check": "pnpm typecheck && pnpm test && pnpm validate:upgrade",
-    "validate:upgrade": "node scripts/validate-token-upgrade.mjs"
+    "check": "pnpm typecheck && pnpm test && pnpm validate:supply-20b && pnpm validate:upgrade && pnpm validate:sui-profiles && pnpm validate:production-deployment && node scripts/validate-token.mjs && node scripts/validate-schemas.mjs && node scripts/verify-integrity.mjs",
+    "validate:upgrade": "node scripts/validate-token-upgrade.mjs",
+    "deployment:evidence:create": "node --experimental-strip-types scripts/create-deployment-evidence.ts",
+    "deployment:evidence:verify": "node --experimental-strip-types scripts/verify-deployment-evidence.ts",
+    "validate:production-deployment": "node scripts/validate-production-deployment.mjs",
+    "sui:prepare:mainnet": "node scripts/prepare-sui-contract-profile.mjs mainnet",
+    "sui:prepare:devnet": "node scripts/prepare-sui-contract-profile.mjs devnet",
+    "validate:sui-profiles": "node scripts/validate-sui-contract-profiles.mjs",
+    "validate:supply-20b": "node scripts/validate-20b-supply.mjs"
   }
 }

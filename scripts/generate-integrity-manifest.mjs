@@ -3,8 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const includedRoots = ["config", "metadata", "data", "database/schemas", "contracts", "programs"];
-const allowed = /\.(?:json|move|toml|md)$/;
+const includedRoots = ["config", "metadata", "data", "database/schemas", "contracts", "programs", "common", "constants", "context", "functions", "security", "services", "storage", "utils", "validation", "scripts"];
+const allowed = /\.(?:json|move|toml|md|ts|mjs)$/;
 const rows = [];
 for (const base of includedRoots) {
   const absolute = path.join(root, base);

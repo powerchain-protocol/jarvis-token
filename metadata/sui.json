@@ -9,10 +9,10 @@
   "packageId": null,
   "verified": false,
   "displayTicker": "JARVIS",
-  "sourceProfile": "token/contracts/sui-mainnet",
+  "sourceProfile": "token/contracts/mainnet",
   "metadataObjectId": null,
   "fixedSupplyObjectId": null,
   "publishedTransactionDigest": null,
   "treasuryCapConsumed": true,
-  "maximumSupplyBaseUnits": "18440000000000000"
+  "maximumSupplyBaseUnits": "20000000000000000"
 }
